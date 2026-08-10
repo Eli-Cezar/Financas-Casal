@@ -6,37 +6,158 @@
   <title>Finanças do Casal</title>
   <style>
     :root {
-      --primary: #2e7d32;
-      --danger: #c62828;
-      --bg: #f4f6f8;
-      --card: #ffffff;
-      --text: #333333;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --primary: #10b981;
+      --primary-bg: #ecfdf5;
+      --danger: #ef4444;
+      --danger-bg: #fef2f2;
+      --border: #e2e8f0;
+      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+      --radius: 12px;
     }
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 16px; }
-    .container { max-width: 500px; margin: 0 auto; }
-    h1 { text-align: center; font-size: 1.4rem; color: var(--primary); margin-bottom: 16px; }
-    .card { background: var(--card); border-radius: 12px; padding: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 16px; }
-    .balance-container { display: flex; justify-content: space-between; text-align: center; }
-    .balance-item span { display: block; font-size: 0.8rem; color: #666; }
-    .balance-item strong { font-size: 1.1rem; }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0f172a;
+        --card-bg: #1e293b;
+        --text: #f8fafc;
+        --text-muted: #94a3b8;
+        --primary-bg: rgba(16, 185, 129, 0.1);
+        --danger-bg: rgba(239, 68, 68, 0.1);
+        --border: #334155;
+      }
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); padding: 16px; min-height: 100vh; }
+    .container { max-width: 500px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+
+    header { text-align: center; margin-bottom: 4px; }
+    header h1 { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
+    header p { font-size: 0.85rem; color: var(--text-muted); }
+
+    .balance-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      text-align: center;
+    }
+    .balance-item span { display: block; font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
+    .balance-item strong { display: block; font-size: 1rem; margin-top: 4px; }
     .income { color: var(--primary); }
     .expense { color: var(--danger); }
-    form { display: flex; flex-direction: column; gap: 10px; }
-    input, select, button { padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 1rem; }
-    button { background: var(--primary); color: white; border: none; font-weight: bold; cursor: pointer; }
-    ul { list-style: none; padding: 0; margin: 0; }
-    li { background: var(--card); padding: 12px 16px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
-    .item-info { display: flex; flex-direction: column; }
-    .item-info small { color: #888; font-size: 0.75rem; }
-    .delete-btn { background: transparent; color: var(--danger); border: none; font-size: 1.1rem; cursor: pointer; padding: 4px 8px; }
+
+    .form-card {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+    form { display: flex; flex-direction: column; gap: 12px; }
+    .form-group { display: flex; gap: 8px; }
+    .form-group > * { flex: 1; }
+    
+    input, select {
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background-color: var(--bg);
+      color: var(--text);
+      font-size: 0.95rem;
+      outline: none;
+    }
+    input:focus, select:focus { border-color: var(--primary); }
+
+    button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    button:active { opacity: 0.8; }
+
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 8px;
+    }
+    .history-header h2 { font-size: 1.1rem; }
+    .filter-select { padding: 6px 10px; font-size: 0.8rem; border-radius: 6px; }
+
+    ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    li {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .item-left { display: flex; align-items: center; gap: 12px; }
+    .category-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+    .category-icon.income-bg { background: var(--primary-bg); color: var(--primary); }
+    .category-icon.expense-bg { background: var(--danger-bg); color: var(--danger); }
+
+    .item-details strong { display: block; font-size: 0.95rem; }
+    .item-details small { color: var(--text-muted); font-size: 0.75rem; }
+    .author-badge {
+      display: inline-block;
+      background: var(--border);
+      color: var(--text-muted);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.65rem;
+      margin-left: 4px;
+    }
+
+    .item-right { display: flex; align-items: center; gap: 12px; }
+    .item-value { font-weight: 700; font-size: 0.95rem; }
+    .delete-btn {
+      background: transparent;
+      color: var(--text-muted);
+      border: none;
+      font-size: 1.1rem;
+      cursor: pointer;
+      padding: 4px;
+    }
+    .delete-btn:hover { color: var(--danger); }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <h1>Finanças do Casal</h1>
+  <header>
+    <h1>Finanças do Casal</h1>
+    <p>Gestão Compartilhada em Tempo Real</p>
+  </header>
 
-  <div class="card balance-container">
+  <!-- Painel de Resumo -->
+  <div class="balance-card">
     <div class="balance-item">
       <span>Entradas</span>
       <strong class="income" id="total-income">R$ 0,00</strong>
@@ -51,29 +172,59 @@
     </div>
   </div>
 
-  <div class="card">
+  <!-- Formulário de Cadastro -->
+  <div class="form-card">
     <form id="finance-form">
-      <input type="text" id="desc" placeholder="Descrição (ex: Mercado)" required />
-      <input type="number" step="0.01" id="amount" placeholder="Valor (R$)" required />
-      <select id="type">
-        <option value="expense">Saída (Despesa)</option>
-        <option value="income">Entrada (Receita)</option>
-      </select>
+      <input type="text" id="desc" placeholder="Descrição (ex: Mercado, Aluguel)" required />
+      
+      <div class="form-group">
+        <input type="number" step="0.01" id="amount" placeholder="Valor (R$)" required />
+        <select id="type">
+          <option value="expense">Saída (Despesa)</option>
+          <option value="income">Entrada (Receita)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <select id="category">
+          <option value="Geral">🏠 Moradia / Geral</option>
+          <option value="Alimentação">🛒 Alimentação</option>
+          <option value="Transporte">🛵 Transporte / Combustível</option>
+          <option value="Contas">💡 Contas / Serviços</option>
+          <option value="Lazer">🎉 Lazer</option>
+          <option value="Salário">💵 Salário / Renda</option>
+        </select>
+        <select id="author">
+          <option value="Eli">Pessoa: Eli</option>
+          <option value="Viviane">Pessoa: Viviane</option>
+          <option value="Casal">Pessoa: Casal</option>
+        </select>
+      </div>
+
       <button type="submit">Adicionar Transação</button>
     </form>
   </div>
 
-  <h3>Histórico em Tempo Real</h3>
+  <!-- Histórico com Filtro -->
+  <div class="history-header">
+    <h2>Histórico</h2>
+    <select id="filter-author" class="filter-select">
+      <option value="all">Todos os Lançamentos</option>
+      <option value="Eli">Filtrar: Eli</option>
+      <option value="Viviane">Filtrar: Viviane</option>
+    </select>
+  </div>
+
   <ul id="transactions-list"></ul>
 </div>
 
-<!-- Firebase SDK via CDN Modulares (compatível com navegador direto) -->
+<!-- Firebase SDK via CDN Modulares -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { getDatabase, ref, push, onValue, remove } 
     from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-  // Configuração das suas chaves do Firebase
+  // Configuração mantida do seu projeto
   const firebaseConfig = {
     apiKey: "AIzaSyBnclw_6nuqtIqwxf5wnlMgoDWxez-kxu0",
     authDomain: "financas-casal-9f88c.firebaseapp.com",
@@ -84,71 +235,111 @@
     appId: "1:458879071548:web:c9ae2f9de1eac2d4ed5a39"
   };
 
-  // Inicializa o Firebase
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
   const dbRef = ref(db, "transacoes");
 
   const form = document.getElementById("finance-form");
   const list = document.getElementById("transactions-list");
+  const filterAuthor = document.getElementById("filter-author");
 
-  // Salvar no Realtime Database ao enviar formulário
+  // Ícones por Categoria
+  const categoryIcons = {
+    "Moradia": "🏠",
+    "Geral": "🏠",
+    "Alimentação": "🛒",
+    "Transporte": "🛵",
+    "Contas": "💡",
+    "Lazer": "🎉",
+    "Salário": "💵"
+  };
+
+  let globalData = null;
+
+  // Salvar no Firebase
   form.addEventListener("submit", (e) => {
     e.preventDefault();
     const desc = document.getElementById("desc").value;
     const amount = parseFloat(document.getElementById("amount").value);
     const type = document.getElementById("type").value;
+    const category = document.getElementById("category").value;
+    const author = document.getElementById("author").value;
 
     push(dbRef, {
       desc,
       amount,
       type,
+      category: category || "Geral",
+      author: author || "Casal",
       timestamp: Date.now()
     });
 
     form.reset();
   });
 
-  // Escutar e atualizar em tempo real
-  onValue(dbRef, (snapshot) => {
+  // Renderizar a lista na tela
+  function renderList() {
+    if (!globalData) return;
+
     list.innerHTML = "";
     let incomeSum = 0;
     let expenseSum = 0;
-    const data = snapshot.val();
+    const selectedFilter = filterAuthor.value;
 
-    if (data) {
-      Object.keys(data).forEach((id) => {
-        const item = data[id];
-        if (item.type === "income") incomeSum += item.amount;
-        if (item.type === "expense") expenseSum += item.amount;
+    Object.keys(globalData).forEach((id) => {
+      const item = globalData[id];
+      
+      // Totais calculados
+      if (item.type === "income") incomeSum += item.amount;
+      if (item.type === "expense") expenseSum += item.amount;
 
-        const li = document.createElement("li");
-        li.innerHTML = `
-          <div class="item-info">
-            <strong>${item.desc}</strong>
-            <small>${item.type === 'income' ? 'Entrada' : 'Saída'}</small>
+      // Filtro de exibição por pessoa
+      if (selectedFilter !== "all" && item.author && item.author !== selectedFilter) {
+        return;
+      }
+
+      const icon = categoryIcons[item.category] || (item.type === 'income' ? '💵' : '💳');
+      const bgClass = item.type === 'income' ? 'income-bg' : 'expense-bg';
+      const authorTag = item.author ? `<span class="author-badge">${item.author}</span>` : '';
+
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <div class="item-left">
+          <div class="category-icon ${bgClass}">${icon}</div>
+          <div class="item-details">
+            <strong>${item.desc} ${authorTag}</strong>
+            <small>${item.category || 'Geral'}</small>
           </div>
-          <div>
-            <span style="font-weight: bold; margin-right: 8px;" class="${item.type}">
-              ${item.type === 'expense' ? '-' : '+'} R$ ${item.amount.toFixed(2)}
-            </span>
-            <button class="delete-btn" onclick="deleteItem('${id}')">✕</button>
-          </div>
-        `;
-        list.appendChild(li);
-      });
-    }
+        </div>
+        <div class="item-right">
+          <span class="item-value ${item.type}">
+            ${item.type === 'expense' ? '-' : '+'} R$ ${item.amount.toFixed(2)}
+          </span>
+          <button class="delete-btn" onclick="deleteItem('${id}')">✕</button>
+        </div>
+      `;
+      list.appendChild(li);
+    });
 
-    // Atualiza o painel de resumos
+    // Atualizar resumos
     document.getElementById("total-income").innerText = `R$ ${incomeSum.toFixed(2)}`;
     document.getElementById("total-expense").innerText = `R$ ${expenseSum.toFixed(2)}`;
     const balance = incomeSum - expenseSum;
     const balanceEl = document.getElementById("total-balance");
     balanceEl.innerText = `R$ ${balance.toFixed(2)}`;
     balanceEl.style.color = balance >= 0 ? "var(--primary)" : "var(--danger)";
+  }
+
+  // Escutar Firebase em Tempo Real
+  onValue(dbRef, (snapshot) => {
+    globalData = snapshot.val();
+    renderList();
   });
 
-  // Função para deletar um registro
+  // Evento de filtro
+  filterAuthor.addEventListener("change", renderList);
+
+  // Deletar Item
   window.deleteItem = (id) => {
     remove(ref(db, `transacoes/${id}`));
   };
