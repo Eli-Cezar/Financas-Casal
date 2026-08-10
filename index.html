@@ -13,10 +13,8 @@
       --accent: #f97316;
       --accent-hover: #ea580c;
       --accent-bg: rgba(249, 115, 22, 0.15);
-      --primary: #10b981;
-      --primary-bg: rgba(16, 185, 129, 0.12);
-      --danger: #ef4444;
-      --danger-bg: rgba(239, 68, 68, 0.12);
+      --primary: #34d399;
+      --danger: #f87171;
       --border: #27272a;
       --border-focus: #f97316;
       --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.7), 0 4px 6px -4px rgba(0, 0, 0, 0.5);
@@ -40,17 +38,39 @@
       border: 1px solid var(--border);
     }
 
-    /* Painel de Saldo */
+    /* Painel de Saldo com Borda Laranja */
     .balance-card {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 10px;
       text-align: center;
+      border: 1px solid rgba(249, 115, 22, 0.35);
+      background: var(--card-bg);
     }
-    .balance-item span { display: block; font-size: 0.7rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-    .balance-item strong { display: block; font-size: 1.05rem; margin-top: 6px; }
-    .income { color: #34d399; }
-    .expense { color: #f87171; }
+    .balance-item {
+      padding: 10px 4px;
+      border-radius: 10px;
+      background: rgba(249, 115, 22, 0.05);
+      border: 1px solid rgba(249, 115, 22, 0.3);
+    }
+    .balance-item span { 
+      display: block; 
+      font-size: 0.85rem; /* Fonte aumentada para melhor leitura */
+      color: #fb923c; 
+      font-weight: 800; 
+      text-transform: uppercase; 
+      letter-spacing: 0.5px; 
+    }
+    .balance-item strong { 
+      display: block; 
+      font-size: 1.05rem; 
+      margin-top: 4px; 
+      font-weight: 700; 
+    }
+    
+    /* Cores dos Valores no Painel */
+    .income { color: var(--primary) !important; }
+    .expense { color: var(--danger) !important; }
 
     /* Formulário */
     form { display: flex; flex-direction: column; gap: 12px; }
@@ -126,7 +146,7 @@
 
     .item-left { display: flex; align-items: center; gap: 12px; }
     
-    /* Ícone das Categorias com Destaque Laranja */
+    /* Ícone das Categorias */
     .category-icon {
       width: 42px;
       height: 42px;
@@ -157,6 +177,7 @@
 
     .item-right { display: flex; align-items: center; gap: 12px; }
     .item-value { font-weight: 700; font-size: 0.95rem; }
+    
     .delete-btn {
       background: transparent;
       color: var(--text-muted);
@@ -170,7 +191,7 @@
     .delete-btn:hover {
       color: #f87171;
       border-color: rgba(239, 68, 68, 0.3);
-      background: var(--danger-bg);
+      background: rgba(239, 68, 68, 0.12);
     }
   </style>
 </head>
@@ -182,7 +203,7 @@
     <p>Gestão Compartilhada em Tempo Real</p>
   </header>
 
-  <!-- Painel de Resumo -->
+  <!-- Painel de Resumo com Bordas Laranja -->
   <div class="balance-card">
     <div class="balance-item">
       <span>Entradas</span>
@@ -348,10 +369,17 @@
     // Atualizar resumos
     document.getElementById("total-income").innerText = `R$ ${incomeSum.toFixed(2)}`;
     document.getElementById("total-expense").innerText = `R$ ${expenseSum.toFixed(2)}`;
+    
     const balance = incomeSum - expenseSum;
     const balanceEl = document.getElementById("total-balance");
     balanceEl.innerText = `R$ ${balance.toFixed(2)}`;
-    balanceEl.style.color = balance >= 0 ? "#34d399" : "#f87171";
+    
+    // Cor condicional do Saldo
+    if (balance >= 0) {
+      balanceEl.style.color = "var(--primary)";
+    } else {
+      balanceEl.style.color = "var(--danger)";
+    }
   }
 
   // Escutar Firebase em Tempo Real
