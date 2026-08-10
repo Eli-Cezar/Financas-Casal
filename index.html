@@ -6,18 +6,20 @@
   <title>Finanças do Casal</title>
   <style>
     :root {
-      --bg: #0f172a;
-      --card-bg: #1e293b;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
+      --bg: #000000;
+      --card-bg: #121212;
+      --text: #ffffff;
+      --text-muted: #a1a1aa;
+      --accent: #f97316;
+      --accent-hover: #ea580c;
+      --accent-bg: rgba(249, 115, 22, 0.15);
       --primary: #10b981;
-      --primary-hover: #059669;
       --primary-bg: rgba(16, 185, 129, 0.12);
       --danger: #ef4444;
       --danger-bg: rgba(239, 68, 68, 0.12);
-      --border: #334155;
-      --border-focus: #10b981;
-      --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.2);
+      --border: #27272a;
+      --border-focus: #f97316;
+      --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.7), 0 4px 6px -4px rgba(0, 0, 0, 0.5);
       --radius: 14px;
     }
 
@@ -26,7 +28,7 @@
     .container { max-width: 480px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
 
     header { text-align: center; margin-bottom: 2px; }
-    header h1 { font-size: 1.6rem; font-weight: 700; color: #34d399; letter-spacing: -0.5px; }
+    header h1 { font-size: 1.6rem; font-weight: 700; color: var(--accent); letter-spacing: -0.5px; }
     header p { font-size: 0.85rem; color: var(--text-muted); margin-top: 2px; }
 
     /* Cards e Containers */
@@ -59,34 +61,34 @@
       padding: 12px 14px;
       border-radius: 10px;
       border: 1px solid var(--border);
-      background-color: #0f172a;
+      background-color: #000000;
       color: var(--text);
       font-size: 0.95rem;
       outline: none;
       transition: all 0.2s ease;
     }
-    input::placeholder { color: #64748b; }
+    input::placeholder { color: #71717a; }
     input:focus, select:focus {
       border-color: var(--border-focus);
-      box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+      box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.25);
     }
 
-    /* Botão com Contorno Suave */
+    /* Botão Laranja */
     button[type="submit"] {
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
       color: white;
-      border: 1px solid rgba(52, 211, 153, 0.4);
+      border: 1px solid rgba(251, 146, 60, 0.4);
       border-radius: 10px;
       padding: 13px;
       font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+      box-shadow: 0 4px 14px rgba(249, 115, 22, 0.35);
       transition: all 0.2s ease;
     }
     button[type="submit"]:active {
       transform: scale(0.98);
-      box-shadow: 0 2px 6px rgba(16, 185, 129, 0.2);
+      box-shadow: 0 2px 6px rgba(249, 115, 22, 0.2);
     }
 
     /* Histórico */
@@ -96,14 +98,14 @@
       align-items: center;
       margin-top: 6px;
     }
-    .history-header h2 { font-size: 1.15rem; font-weight: 600; }
+    .history-header h2 { font-size: 1.15rem; font-weight: 600; color: var(--accent); }
     .filter-select {
       padding: 8px 12px;
       font-size: 0.8rem;
       border-radius: 8px;
       border: 1px solid var(--border);
       background-color: var(--card-bg);
-      color: var(--text-muted);
+      color: var(--text);
     }
 
     ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
@@ -118,7 +120,13 @@
       align-items: center;
       transition: transform 0.15s ease;
     }
+    li:hover {
+      border-color: rgba(249, 115, 22, 0.4);
+    }
+
     .item-left { display: flex; align-items: center; gap: 12px; }
+    
+    /* Ícone das Categorias com Destaque Laranja */
     .category-icon {
       width: 42px;
       height: 42px;
@@ -127,22 +135,24 @@
       align-items: center;
       justify-content: center;
       font-size: 1.25rem;
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      background: var(--accent-bg);
+      border: 1px solid rgba(249, 115, 22, 0.3);
+      color: var(--accent);
     }
-    .category-icon.income-bg { background: var(--primary-bg); color: #34d399; }
-    .category-icon.expense-bg { background: var(--danger-bg); color: #f87171; }
 
-    .item-details strong { display: block; font-size: 0.95rem; font-weight: 600; }
+    .item-details strong { display: block; font-size: 0.95rem; font-weight: 600; color: #ffffff; }
     .item-details small { color: var(--text-muted); font-size: 0.75rem; margin-top: 2px; display: block; }
+    
     .author-badge {
       display: inline-block;
-      background: #334155;
-      color: #cbd5e1;
+      background: var(--accent-bg);
+      color: #fb923c;
+      border: 1px solid rgba(249, 115, 22, 0.4);
       padding: 2px 6px;
       border-radius: 4px;
       font-size: 0.65rem;
       margin-left: 6px;
-      font-weight: 500;
+      font-weight: 600;
     }
 
     .item-right { display: flex; align-items: center; gap: 12px; }
@@ -314,13 +324,12 @@
       }
 
       const icon = categoryIcons[item.category] || (item.type === 'income' ? '💵' : '💳');
-      const bgClass = item.type === 'income' ? 'income-bg' : 'expense-bg';
       const authorTag = item.author ? `<span class="author-badge">${item.author}</span>` : '';
 
       const li = document.createElement("li");
       li.innerHTML = `
         <div class="item-left">
-          <div class="category-icon ${bgClass}">${icon}</div>
+          <div class="category-icon">${icon}</div>
           <div class="item-details">
             <strong>${item.desc} ${authorTag}</strong>
             <small>${item.category || 'Geral'}</small>
