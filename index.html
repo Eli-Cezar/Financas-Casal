@@ -22,16 +22,20 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    html, body { height: 100%; overflow: hidden; }
-    body { background-color: var(--bg); color: var(--text); padding: 20px 16px; }
-    .container { max-width: 480px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; min-height: 100%; }
-    .history-panel { flex: 1 1 auto; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
-    .sticky-section {
+    html, body { min-height: 100%; }
+    body { background-color: var(--bg); color: var(--text); padding: 20px 16px; overflow-y: auto; }
+    .container { max-width: 480px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
+    .top-fixed {
       position: sticky;
-      top: 0;
+      top: 20px;
       z-index: 20;
       background: var(--bg);
-      padding-top: 4px;
+      width: 100%;
+      max-width: 100%;
+      align-self: stretch;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
       padding-bottom: 8px;
     }
 
@@ -352,18 +356,18 @@
 <body>
 
 <div class="container">
-  <div class="sticky-section">
-    <header>
-      <h1>Finanças do Casal</h1>
-      <p>Gestão Compartilhada em Tempo Real</p>
-    </header>
+    <div class="top-fixed">
+      <header>
+        <h1>Finanças do Casal</h1>
+        <p>Gestão Compartilhada em Tempo Real</p>
+      </header>
 
-    <!-- Painel de Resumo com Bordas Laranja -->
-    <div class="balance-card">
-    <div class="balance-item">
-      <span>Entradas</span>
-      <strong class="income" id="total-income">R$ 0,00</strong>
-    </div>
+      <!-- Painel de Resumo com Bordas Laranja -->
+      <div class="balance-card">
+      <div class="balance-item">
+        <span>Entradas</span>
+        <strong class="income" id="total-income">R$ 0,00</strong>
+      </div>
     <div class="balance-item">
       <span>Saídas</span>
       <strong class="expense" id="total-expense">R$ 0,00</strong>
@@ -372,6 +376,7 @@
       <span>Saldo</span>
       <strong id="total-balance">R$ 0,00</strong>
     </div>
+  </div>
   </div>
 
     <!-- Formulário de Cadastro -->
@@ -412,7 +417,6 @@
       <button type="submit">Adicionar Transação</button>
     </form>
     </div>
-  </div>
 
   <!-- Histórico com Filtro -->
   <div class="history-panel">
