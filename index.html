@@ -198,6 +198,16 @@
     .suggestions.show {
       display: flex;
     }
+    .form-message {
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      margin-top: 8px;
+      display: none;
+    }
+    .form-message.show { display: block; }
+    .form-message.error { background: rgba(248, 113, 113, 0.12); color: #f87171; border: 1px solid rgba(248,113,113,0.2); }
+    .form-message.success { background: rgba(34,197,94,0.08); color: #16a34a; border: 1px solid rgba(34,197,94,0.12); }
     .suggestion-item {
       width: 100%;
       text-align: left;
@@ -435,6 +445,8 @@
         <button type="button" id="add-launch-btn" class="secondary-btn">Cadastrar</button>
       </div>
 
+      <div id="form-message" class="form-message" role="status" aria-live="polite"></div>
+
       <div id="desc-suggestions" class="suggestions"></div>
 
       <div class="form-group">
@@ -510,6 +522,8 @@
   const addLaunchBtn = document.getElementById("add-launch-btn");
   const submitButton = form.querySelector("button[type='submit']");
 
+  const currencyFormatter = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+
   // Ícones por Categoria
   const categoryIcons = {
     "Moradia": "🏠",
@@ -576,31 +590,35 @@
   function renderSuggestions() {
     const query = descInput.value.trim().toLowerCase();
 
-    if (!query) {
-      suggestionsBox.innerHTML = "";
-      suggestionsBox.classList.remove("show");
-      return;
-    }
+    suggestionsBox.innerHTML = "";
+    suggestionsBox.classList.remove("show");
 
-    const matches = Object.entries(launchCatalog)
+    if (!query) return;
+
+    const matches = Object.entries(launchCatalog || {})
       .filter(([_, item]) => (item.label || "").toLowerCase().includes(query))
       .sort((a, b) => (a[1].label || "").localeCompare(b[1].label || ""))
       .slice(0, 6);
 
     if (matches.length) {
-      suggestionsBox.innerHTML = matches.map(([id, item]) => `
-        <button type="button" class="suggestion-item" data-launch-id="${id}">
-          ${item.label}
-        </button>
-      `).join("");
-      suggestionsBox.classList.add("show");
+      matches.forEach(([id, item]) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'suggestion-item';
+        btn.dataset.launchId = id;
+        btn.textContent = item.label || '';
+        suggestionsBox.appendChild(btn);
+      });
+      suggestionsBox.classList.add('show');
       return;
     }
 
-    suggestionsBox.innerHTML = `
-      <button type="button" class="suggestion-item">+ Cadastrar novo lançamento</button>
-    `;
-    suggestionsBox.classList.add("show");
+    const newBtn = document.createElement('button');
+    newBtn.type = 'button';
+    newBtn.className = 'suggestion-item';
+    newBtn.textContent = '+ Cadastrar novo lançamento';
+    suggestionsBox.appendChild(newBtn);
+    suggestionsBox.classList.add('show');
   }
 
   function selectLaunch(id) {
@@ -649,45 +667,82 @@
   // Salvar no Firebase
   form.addEventListener("submit", (e) => {
     e.preventDefault();
-    const desc = descInput.value.trim();
-    const amount = parseFloat(document.getElementById("amount").value);
-    const type = document.getElementById("type").value;
-    const paymentStatusMode = document.getElementById("payment-status").value;
-    const category = document.getElementById("category").value;
-    const dueDate = document.getElementById("due-date").value;
+    (async () => {
+      const desc = descInput.value.trim();
+      const amountRaw = document.getElementById("amount").value;
+      const amount = parseFloat(amountRaw);
+      const type = document.getElementById("type").value;
+      const paymentStatusMode = document.getElementById("payment-status").value;
+      const category = document.getElementById("category").value;
+      const dueDate = document.getElementById("due-date").value;
 
-    if (!desc || Number.isNaN(amount)) return;
+      // Validações básicas
+      if (!desc) {
+        showFormMessage('Preencha a descrição.', 'error');
+        descInput.focus();
+        return;
+      }
 
-    let paymentStatus = "A pagar";
-    let statusSource = "auto";
+      if (Number.isNaN(amount) || amount <= 0) {
+        showFormMessage('Informe um valor válido maior que zero.', 'error');
+        document.getElementById('amount').focus();
+        return;
+      }
 
-    if (paymentStatusMode === "Pago" || paymentStatusMode === "A pagar") {
-      paymentStatus = paymentStatusMode;
-      statusSource = "manual";
-    } else {
-      paymentStatus = getAutoPaymentStatus(dueDate);
-    }
+      let paymentStatus = "A pagar";
+      let statusSource = "auto";
 
-    const payload = {
-      desc,
-      amount,
-      type,
-      paymentStatus,
-      statusSource,
-      dueDate: dueDate || null,
-      category: category || "Geral",
-      launchId: selectedLaunchId || null,
-      timestamp: Date.now()
-    };
+      if (paymentStatusMode === "Pago" || paymentStatusMode === "A pagar") {
+        paymentStatus = paymentStatusMode;
+        statusSource = "manual";
+      } else {
+        paymentStatus = getAutoPaymentStatus(dueDate);
+      }
 
-    if (editingTransactionId) {
-      update(ref(db, `transacoes/${editingTransactionId}`), payload);
-    } else {
-      push(dbRef, payload);
-    }
+      const payload = {
+        desc,
+        amount,
+        type,
+        paymentStatus,
+        statusSource,
+        dueDate: dueDate || null,
+        category: category || "Geral",
+        launchId: selectedLaunchId || null,
+        timestamp: Date.now()
+      };
 
-    resetForm();
+      // Feedback de submissão
+      submitButton.disabled = true;
+      submitButton.textContent = editingTransactionId ? 'Salvando...' : 'Enviando...';
+      showFormMessage('', '');
+
+      try {
+        if (editingTransactionId) {
+          await update(ref(db, `transacoes/${editingTransactionId}`), payload);
+        } else {
+          await push(dbRef, payload);
+        }
+        showFormMessage('Transação salva com sucesso.', 'success');
+        resetForm();
+      } catch (err) {
+        console.error('Erro ao salvar transação:', err);
+        showFormMessage('Erro ao salvar. Verifique a conexão e permissões do Firebase.', 'error');
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = 'Adicionar Transação';
+      }
+    })();
   });
+
+  function showFormMessage(text, type) {
+    const el = document.getElementById('form-message');
+    if (!el) return;
+    el.textContent = text || '';
+    el.className = 'form-message';
+    if (text) el.classList.add('show');
+    if (type === 'error') el.classList.add('error');
+    if (type === 'success') el.classList.add('success');
+  }
 
   descInput.addEventListener("input", renderSuggestions);
   descInput.addEventListener("focus", renderSuggestions);
@@ -737,7 +792,8 @@
 
   // Renderizar a lista na tela
   function renderList() {
-    if (!globalData) return;
+    // Garante que globalData seja um objeto
+    globalData = globalData || {};
 
     list.innerHTML = "";
     let incomeSum = 0;
@@ -746,54 +802,106 @@
 
     Object.keys(globalData).forEach((id) => {
       const item = globalData[id];
-      
-      // Totais calculados
-      if (item.type === "income") incomeSum += item.amount;
-      if (item.type === "expense") expenseSum += item.amount;
+      if (!item) return;
+
+      // Totais calculados (garantindo número)
+      const amount = Number(item.amount) || 0;
+      if (item.type === "income") incomeSum += amount;
+      if (item.type === "expense") expenseSum += amount;
 
       // Filtro de exibição por status de pagamento
-      if (selectedFilter !== "all" && item.paymentStatus !== selectedFilter) {
+      if (selectedFilter !== "all" && resolvePaymentStatus(item) !== selectedFilter) {
         return;
       }
 
       const icon = categoryIcons[item.category] || (item.type === 'income' ? '💵' : '💳');
       const paymentStatus = resolvePaymentStatus(item);
       const statusClass = paymentStatus === 'Pago' ? 'paid' : 'pending';
-      const statusTag = `<button type="button" class="status-toggle ${statusClass}" data-id="${id}">${paymentStatus}</button>`;
-      const dateLabel = item.dueDate ? `<small>Previsto para: ${formatDateLabel(item.dueDate)}</small>` : '';
 
-      const li = document.createElement("li");
-      li.innerHTML = `
-        <div class="item-left">
-          <div class="category-icon">${icon}</div>
-          <div class="item-details">
-            <strong>${item.desc}</strong>
-            <small>${item.category || 'Geral'}</small>
-            ${dateLabel}
-            ${statusTag}
-          </div>
-        </div>
-        <div class="item-right">
-          <span class="item-value ${item.type}">
-            ${item.type === 'expense' ? '-' : '+'} R$ ${item.amount.toFixed(2)}
-          </span>
-          <div class="item-actions">
-            <button class="edit-btn" onclick="editItem('${id}')">✎</button>
-            <button class="delete-btn" onclick="deleteItem('${id}')">✕</button>
-          </div>
-        </div>
-      `;
+      const li = document.createElement('li');
+
+      const left = document.createElement('div');
+      left.className = 'item-left';
+
+      const iconEl = document.createElement('div');
+      iconEl.className = 'category-icon';
+      iconEl.textContent = icon;
+
+      const details = document.createElement('div');
+      details.className = 'item-details';
+
+      const title = document.createElement('strong');
+      title.textContent = item.desc || '';
+
+      const cat = document.createElement('small');
+      cat.textContent = item.category || 'Geral';
+
+      details.appendChild(title);
+      details.appendChild(cat);
+
+      if (item.dueDate) {
+        const dateSmall = document.createElement('small');
+        dateSmall.textContent = `Previsto para: ${formatDateLabel(item.dueDate)}`;
+        details.appendChild(dateSmall);
+      }
+
+      const statusBtn = document.createElement('button');
+      statusBtn.type = 'button';
+      statusBtn.className = `status-toggle ${statusClass}`;
+      statusBtn.dataset.id = id;
+      statusBtn.textContent = paymentStatus;
+      details.appendChild(statusBtn);
+
+      left.appendChild(iconEl);
+      left.appendChild(details);
+
+      const right = document.createElement('div');
+      right.className = 'item-right';
+
+      const valueSpan = document.createElement('span');
+      valueSpan.className = `item-value ${item.type}`;
+      const sign = item.type === 'expense' ? '-' : '+';
+      valueSpan.textContent = `${sign} ${currencyFormatter.format(amount)}`;
+
+      const actions = document.createElement('div');
+      actions.className = 'item-actions';
+
+      const editBtn = document.createElement('button');
+      editBtn.className = 'edit-btn';
+      editBtn.type = 'button';
+      editBtn.textContent = '✎';
+      editBtn.addEventListener('click', () => populateFormForEdit(id));
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.className = 'delete-btn';
+      deleteBtn.type = 'button';
+      deleteBtn.textContent = '✕';
+      deleteBtn.addEventListener('click', () => {
+        if (confirm('Confirmar exclusão deste lançamento?')) {
+          remove(ref(db, `transacoes/${id}`));
+        }
+      });
+
+      actions.appendChild(editBtn);
+      actions.appendChild(deleteBtn);
+
+      right.appendChild(valueSpan);
+      right.appendChild(actions);
+
+      li.appendChild(left);
+      li.appendChild(right);
+
       list.appendChild(li);
     });
 
     // Atualizar resumos
-    document.getElementById("total-income").innerText = `R$ ${incomeSum.toFixed(2)}`;
-    document.getElementById("total-expense").innerText = `R$ ${expenseSum.toFixed(2)}`;
-    
+    document.getElementById("total-income").innerText = currencyFormatter.format(incomeSum);
+    document.getElementById("total-expense").innerText = currencyFormatter.format(expenseSum);
+
     const balance = incomeSum - expenseSum;
     const balanceEl = document.getElementById("total-balance");
-    balanceEl.innerText = `R$ ${balance.toFixed(2)}`;
-    
+    balanceEl.innerText = currencyFormatter.format(balance);
+
     // Cor condicional do Saldo
     if (balance >= 0) {
       balanceEl.style.color = "var(--primary)";
