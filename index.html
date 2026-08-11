@@ -74,8 +74,9 @@
 
     /* Formulário */
     form { display: flex; flex-direction: column; gap: 12px; }
-    .form-group { display: flex; gap: 10px; }
-    .form-group > * { flex: 1; }
+    .form-group { display: flex; gap: 10px; flex-wrap: wrap; }
+    .form-group > * { flex: 1 1 140px; min-width: 0; }
+    .form-group > #category { flex-basis: 100%; }
     
     input, select {
       padding: 12px 14px;
@@ -109,6 +110,69 @@
     button[type="submit"]:active {
       transform: scale(0.98);
       box-shadow: 0 2px 6px rgba(249, 115, 22, 0.2);
+    }
+
+    .input-with-action {
+      display: flex;
+      gap: 10px;
+      align-items: stretch;
+      flex-wrap: wrap;
+    }
+    .input-with-action input {
+      flex: 1 1 220px;
+      min-width: 0;
+    }
+    .secondary-btn {
+      background: #27272a;
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0 12px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      min-height: 46px;
+    }
+    .suggestions {
+      display: none;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 6px;
+      padding: 8px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.35);
+    }
+    .suggestions.show {
+      display: flex;
+    }
+    .suggestion-item {
+      width: 100%;
+      text-align: left;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .suggestion-item:hover {
+      background: rgba(249, 115, 22, 0.12);
+      border-color: rgba(249, 115, 22, 0.25);
+    }
+    .launch-setup {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(249, 115, 22, 0.25);
+      background: rgba(249, 115, 22, 0.08);
+    }
+    .launch-setup.hidden {
+      display: none;
     }
 
     /* Histórico */
@@ -162,22 +226,54 @@
 
     .item-details strong { display: block; font-size: 0.95rem; font-weight: 600; color: #ffffff; }
     .item-details small { color: var(--text-muted); font-size: 0.75rem; margin-top: 2px; display: block; }
-    
-    .author-badge {
-      display: inline-block;
-      background: var(--accent-bg);
-      color: #fb923c;
-      border: 1px solid rgba(249, 115, 22, 0.4);
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-size: 0.65rem;
-      margin-left: 6px;
-      font-weight: 600;
-    }
 
     .item-right { display: flex; align-items: center; gap: 12px; }
     .item-value { font-weight: 700; font-size: 0.95rem; }
     
+    .status-badge {
+      display: inline-block;
+      margin-top: 6px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      width: fit-content;
+    }
+    .status-badge.paid {
+      background: #dcfce7;
+      color: #166534;
+    }
+    .status-badge.pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    .status-toggle {
+      margin-top: 6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #000000;
+      color: var(--text);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .status-toggle.paid {
+      background: #dcfce7;
+      color: #166534;
+      border-color: #86efac;
+    }
+    .status-toggle.pending {
+      background: #fef3c7;
+      color: #92400e;
+      border-color: #fde68a;
+    }
+    .item-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .edit-btn,
     .delete-btn {
       background: transparent;
       color: var(--text-muted);
@@ -188,10 +284,58 @@
       padding: 4px 8px;
       transition: all 0.2s;
     }
+    .edit-btn:hover {
+      color: #fbbf24;
+      border-color: rgba(251, 191, 36, 0.3);
+      background: rgba(251, 191, 36, 0.12);
+    }
     .delete-btn:hover {
       color: #f87171;
       border-color: rgba(239, 68, 68, 0.3);
       background: rgba(239, 68, 68, 0.12);
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 14px 10px;
+      }
+      .container {
+        max-width: 100%;
+        gap: 14px;
+      }
+      .balance-card {
+        grid-template-columns: 1fr;
+      }
+      .history-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+      .input-with-action {
+        flex-direction: column;
+      }
+      .secondary-btn,
+      button[type="submit"] {
+        width: 100%;
+      }
+      .form-group {
+        flex-direction: column;
+      }
+      .form-group > * {
+        flex-basis: 100%;
+      }
+      .form-group > #category {
+        flex-basis: 100%;
+      }
+      .item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+      .item-right {
+        width: 100%;
+        justify-content: space-between;
+      }
     }
   </style>
 </head>
@@ -222,8 +366,13 @@
   <!-- Formulário de Cadastro -->
   <div class="form-card">
     <form id="finance-form">
-      <input type="text" id="desc" placeholder="Descrição (ex: Mercado, Aluguel)" required />
-      
+      <div class="input-with-action">
+        <input type="text" id="desc" placeholder="Descrição (ex: Mercado, Aluguel)" autocomplete="off" required />
+        <button type="button" id="add-launch-btn" class="secondary-btn">Cadastrar</button>
+      </div>
+
+      <div id="desc-suggestions" class="suggestions"></div>
+
       <div class="form-group">
         <input type="number" step="0.01" id="amount" placeholder="Valor (R$)" required />
         <select id="type">
@@ -233,6 +382,12 @@
       </div>
 
       <div class="form-group">
+        <input type="date" id="due-date" />
+        <select id="payment-status">
+          <option value="auto">Automático</option>
+          <option value="Pago">Pago</option>
+          <option value="A pagar">A pagar</option>
+        </select>
         <select id="category">
           <option value="Geral">🏠 Moradia / Geral</option>
           <option value="Alimentação">🛒 Alimentação</option>
@@ -240,10 +395,6 @@
           <option value="Contas">💡 Contas / Serviços</option>
           <option value="Lazer">🎉 Lazer</option>
           <option value="Salário">💵 Salário / Renda</option>
-        </select>
-        <select id="author">
-          <option value="Eli">Pessoa: Eli</option>
-          <option value="Viviane">Pessoa: Viviane</option>
         </select>
       </div>
 
@@ -254,10 +405,10 @@
   <!-- Histórico com Filtro -->
   <div class="history-header">
     <h2>Histórico</h2>
-    <select id="filter-author" class="filter-select">
+    <select id="filter-payment-status" class="filter-select">
       <option value="all">Todos os Lançamentos</option>
-      <option value="Eli">Filtrar: Eli</option>
-      <option value="Viviane">Filtrar: Viviane</option>
+      <option value="Pago">Filtrar: Pago</option>
+      <option value="A pagar">Filtrar: A pagar</option>
     </select>
   </div>
 
@@ -267,7 +418,7 @@
 <!-- Firebase SDK via CDN Modulares -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getDatabase, ref, push, onValue, remove } 
+  import { getDatabase, ref, push, onValue, remove, update } 
     from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
   // Configuração do projeto Firebase
@@ -287,7 +438,11 @@
 
   const form = document.getElementById("finance-form");
   const list = document.getElementById("transactions-list");
-  const filterAuthor = document.getElementById("filter-author");
+  const filterPaymentStatus = document.getElementById("filter-payment-status");
+  const descInput = document.getElementById("desc");
+  const suggestionsBox = document.getElementById("desc-suggestions");
+  const addLaunchBtn = document.getElementById("add-launch-btn");
+  const submitButton = form.querySelector("button[type='submit']");
 
   // Ícones por Categoria
   const categoryIcons = {
@@ -301,27 +456,218 @@
   };
 
   let globalData = null;
+  let launchCatalog = {};
+  let selectedLaunchId = null;
+  let editingTransactionId = null;
+
+  const launchRef = ref(db, "lancamentos");
+
+  function toDateOnly(value) {
+    if (!value) return null;
+    const [year, month, day] = value.split('-').map(Number);
+    return new Date(Date.UTC(year, month - 1, day));
+  }
+
+  function getAutoPaymentStatus(dueDateValue) {
+    if (!dueDateValue) return "A pagar";
+
+    const today = new Date();
+    const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const dueDate = toDateOnly(dueDateValue);
+
+    if (!dueDate) return "A pagar";
+    return dueDate < todayStart ? "Pago" : "A pagar";
+  }
+
+  function resolvePaymentStatus(item) {
+    if (!item?.dueDate) {
+      return item?.paymentStatus || "A pagar";
+    }
+
+    if (item.statusSource === "manual") {
+      return item.paymentStatus || "A pagar";
+    }
+
+    return getAutoPaymentStatus(item.dueDate);
+  }
+
+  function formatDateLabel(value) {
+    if (!value) return "Sem data";
+    const [year, month, day] = value.split('-').map(Number);
+    return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${String(year)}`;
+  }
+
+  function resetForm() {
+    form.reset();
+    descInput.value = "";
+    selectedLaunchId = null;
+    editingTransactionId = null;
+    submitButton.textContent = "Adicionar Transação";
+    suggestionsBox.innerHTML = "";
+    suggestionsBox.classList.remove("show");
+  }
+
+  function renderSuggestions() {
+    const query = descInput.value.trim().toLowerCase();
+
+    if (!query) {
+      suggestionsBox.innerHTML = "";
+      suggestionsBox.classList.remove("show");
+      return;
+    }
+
+    const matches = Object.entries(launchCatalog)
+      .filter(([_, item]) => (item.label || "").toLowerCase().includes(query))
+      .sort((a, b) => (a[1].label || "").localeCompare(b[1].label || ""))
+      .slice(0, 6);
+
+    if (matches.length) {
+      suggestionsBox.innerHTML = matches.map(([id, item]) => `
+        <button type="button" class="suggestion-item" data-launch-id="${id}">
+          ${item.label}
+        </button>
+      `).join("");
+      suggestionsBox.classList.add("show");
+      return;
+    }
+
+    suggestionsBox.innerHTML = `
+      <button type="button" class="suggestion-item">+ Cadastrar novo lançamento</button>
+    `;
+    suggestionsBox.classList.add("show");
+  }
+
+  function selectLaunch(id) {
+    const item = launchCatalog[id];
+    if (!item) return;
+
+    descInput.value = item.label || "";
+    document.getElementById("type").value = item.type || "expense";
+    document.getElementById("payment-status").value = item.paymentStatus && item.paymentStatus !== "auto" ? item.paymentStatus : "auto";
+    document.getElementById("category").value = item.category || "Geral";
+    selectedLaunchId = id;
+    suggestionsBox.classList.remove("show");
+  }
+
+  function saveLaunchFromForm() {
+    const newName = descInput.value.trim();
+    if (!newName) return;
+
+    const newLaunchRef = push(launchRef, {
+      label: newName,
+      type: document.getElementById("type").value,
+      paymentStatus: document.getElementById("payment-status").value,
+      category: document.getElementById("category").value,
+      timestamp: Date.now()
+    });
+
+    selectedLaunchId = newLaunchRef.key;
+    renderSuggestions();
+  }
+
+  function populateFormForEdit(id) {
+    const item = globalData?.[id];
+    if (!item) return;
+
+    descInput.value = item.desc || "";
+    document.getElementById("amount").value = item.amount ?? "";
+    document.getElementById("type").value = item.type || "expense";
+    document.getElementById("payment-status").value = item.statusSource === "manual" ? (item.paymentStatus || "A pagar") : "auto";
+    document.getElementById("category").value = item.category || "Geral";
+    document.getElementById("due-date").value = item.dueDate || "";
+    editingTransactionId = id;
+    submitButton.textContent = "Salvar Alteração";
+    descInput.focus();
+  }
 
   // Salvar no Firebase
   form.addEventListener("submit", (e) => {
     e.preventDefault();
-    const desc = document.getElementById("desc").value;
+    const desc = descInput.value.trim();
     const amount = parseFloat(document.getElementById("amount").value);
     const type = document.getElementById("type").value;
+    const paymentStatusMode = document.getElementById("payment-status").value;
     const category = document.getElementById("category").value;
-    const author = document.getElementById("author").value;
+    const dueDate = document.getElementById("due-date").value;
 
-    push(dbRef, {
+    if (!desc || Number.isNaN(amount)) return;
+
+    let paymentStatus = "A pagar";
+    let statusSource = "auto";
+
+    if (paymentStatusMode === "Pago" || paymentStatusMode === "A pagar") {
+      paymentStatus = paymentStatusMode;
+      statusSource = "manual";
+    } else {
+      paymentStatus = getAutoPaymentStatus(dueDate);
+    }
+
+    const payload = {
       desc,
       amount,
       type,
+      paymentStatus,
+      statusSource,
+      dueDate: dueDate || null,
       category: category || "Geral",
-      author: author || "Eli",
+      launchId: selectedLaunchId || null,
       timestamp: Date.now()
-    });
+    };
 
-    form.reset();
+    if (editingTransactionId) {
+      update(ref(db, `transacoes/${editingTransactionId}`), payload);
+    } else {
+      push(dbRef, payload);
+    }
+
+    resetForm();
   });
+
+  descInput.addEventListener("input", renderSuggestions);
+  descInput.addEventListener("focus", renderSuggestions);
+
+  addLaunchBtn.addEventListener("click", () => {
+    saveLaunchFromForm();
+    document.getElementById("amount").focus();
+  });
+
+  suggestionsBox.addEventListener("click", (event) => {
+    const suggestionBtn = event.target.closest("button[data-launch-id]");
+    if (suggestionBtn) {
+      selectLaunch(suggestionBtn.dataset.launchId);
+      return;
+    }
+
+    if (event.target.closest(".suggestion-item")) {
+      saveLaunchFromForm();
+      document.getElementById("amount").focus();
+    }
+  });
+
+  function syncAutomaticStatuses() {
+    if (!globalData) return;
+
+    Object.entries(globalData).forEach(([id, item]) => {
+      if (!item?.dueDate || item.statusSource === "manual") return;
+
+      const computedStatus = getAutoPaymentStatus(item.dueDate);
+      if (item.paymentStatus !== computedStatus) {
+        update(ref(db, `transacoes/${id}`), {
+          paymentStatus: computedStatus,
+          statusSource: "auto"
+        });
+      }
+    });
+  }
+
+  function updatePaymentStatus(id, newStatus) {
+    if (!globalData?.[id]) return;
+
+    update(ref(db, `transacoes/${id}`), {
+      paymentStatus: newStatus,
+      statusSource: "manual"
+    });
+  }
 
   // Renderizar a lista na tela
   function renderList() {
@@ -330,7 +676,7 @@
     list.innerHTML = "";
     let incomeSum = 0;
     let expenseSum = 0;
-    const selectedFilter = filterAuthor.value;
+    const selectedFilter = filterPaymentStatus.value;
 
     Object.keys(globalData).forEach((id) => {
       const item = globalData[id];
@@ -339,28 +685,36 @@
       if (item.type === "income") incomeSum += item.amount;
       if (item.type === "expense") expenseSum += item.amount;
 
-      // Filtro de exibição por pessoa
-      if (selectedFilter !== "all" && item.author && item.author !== selectedFilter) {
+      // Filtro de exibição por status de pagamento
+      if (selectedFilter !== "all" && item.paymentStatus !== selectedFilter) {
         return;
       }
 
       const icon = categoryIcons[item.category] || (item.type === 'income' ? '💵' : '💳');
-      const authorTag = item.author ? `<span class="author-badge">${item.author}</span>` : '';
+      const paymentStatus = resolvePaymentStatus(item);
+      const statusClass = paymentStatus === 'Pago' ? 'paid' : 'pending';
+      const statusTag = `<button type="button" class="status-toggle ${statusClass}" data-id="${id}">${paymentStatus}</button>`;
+      const dateLabel = item.dueDate ? `<small>Previsto para: ${formatDateLabel(item.dueDate)}</small>` : '';
 
       const li = document.createElement("li");
       li.innerHTML = `
         <div class="item-left">
           <div class="category-icon">${icon}</div>
           <div class="item-details">
-            <strong>${item.desc} ${authorTag}</strong>
+            <strong>${item.desc}</strong>
             <small>${item.category || 'Geral'}</small>
+            ${dateLabel}
+            ${statusTag}
           </div>
         </div>
         <div class="item-right">
           <span class="item-value ${item.type}">
             ${item.type === 'expense' ? '-' : '+'} R$ ${item.amount.toFixed(2)}
           </span>
-          <button class="delete-btn" onclick="deleteItem('${id}')">✕</button>
+          <div class="item-actions">
+            <button class="edit-btn" onclick="editItem('${id}')">✎</button>
+            <button class="delete-btn" onclick="deleteItem('${id}')">✕</button>
+          </div>
         </div>
       `;
       list.appendChild(li);
@@ -385,11 +739,31 @@
   // Escutar Firebase em Tempo Real
   onValue(dbRef, (snapshot) => {
     globalData = snapshot.val();
+    syncAutomaticStatuses();
     renderList();
   });
 
+  onValue(launchRef, (snapshot) => {
+    launchCatalog = snapshot.val() || {};
+    renderSuggestions();
+  });
+
   // Evento de filtro
-  filterAuthor.addEventListener("change", renderList);
+  filterPaymentStatus.addEventListener("change", renderList);
+
+  list.addEventListener("click", (event) => {
+    const button = event.target.closest("button[data-id]");
+    if (!button) return;
+
+    const nextStatus = button.textContent === "Pago" ? "A pagar" : "Pago";
+    updatePaymentStatus(button.dataset.id, nextStatus);
+  });
+
+  setInterval(syncAutomaticStatuses, 60000);
+
+  window.editItem = (id) => {
+    populateFormForEdit(id);
+  };
 
   // Deletar Item
   window.deleteItem = (id) => {
