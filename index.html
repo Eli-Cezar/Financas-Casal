@@ -24,6 +24,14 @@
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
     body { background-color: var(--bg); color: var(--text); padding: 20px 16px; min-height: 100vh; }
     .container { max-width: 480px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
+    .sticky-section {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: var(--bg);
+      padding-top: 4px;
+      padding-bottom: 8px;
+    }
 
     header { text-align: center; margin-bottom: 2px; }
     header h1 { font-size: 1.6rem; font-weight: 700; color: var(--accent); letter-spacing: -0.5px; }
@@ -342,13 +350,14 @@
 <body>
 
 <div class="container">
-  <header>
-    <h1>Finanças do Casal</h1>
-    <p>Gestão Compartilhada em Tempo Real</p>
-  </header>
+  <div class="sticky-section">
+    <header>
+      <h1>Finanças do Casal</h1>
+      <p>Gestão Compartilhada em Tempo Real</p>
+    </header>
 
-  <!-- Painel de Resumo com Bordas Laranja -->
-  <div class="balance-card">
+    <!-- Painel de Resumo com Bordas Laranja -->
+    <div class="balance-card">
     <div class="balance-item">
       <span>Entradas</span>
       <strong class="income" id="total-income">R$ 0,00</strong>
@@ -363,8 +372,8 @@
     </div>
   </div>
 
-  <!-- Formulário de Cadastro -->
-  <div class="form-card">
+    <!-- Formulário de Cadastro -->
+    <div class="form-card">
     <form id="finance-form">
       <div class="input-with-action">
         <input type="text" id="desc" placeholder="Descrição (ex: Mercado, Aluguel)" autocomplete="off" required />
@@ -400,6 +409,7 @@
 
       <button type="submit">Adicionar Transação</button>
     </form>
+    </div>
   </div>
 
   <!-- Histórico com Filtro -->
