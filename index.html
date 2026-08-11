@@ -22,8 +22,10 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-    body { background-color: var(--bg); color: var(--text); padding: 20px 16px; min-height: 100vh; }
-    .container { max-width: 480px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; }
+    html, body { height: 100%; overflow: hidden; }
+    body { background-color: var(--bg); color: var(--text); padding: 20px 16px; }
+    .container { max-width: 480px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px; min-height: 100%; }
+    .history-panel { flex: 1 1 auto; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
     .sticky-section {
       position: sticky;
       top: 0;
@@ -413,16 +415,18 @@
   </div>
 
   <!-- Histórico com Filtro -->
-  <div class="history-header">
-    <h2>Histórico</h2>
-    <select id="filter-payment-status" class="filter-select">
-      <option value="all">Todos os Lançamentos</option>
-      <option value="Pago">Filtrar: Pago</option>
-      <option value="A pagar">Filtrar: A pagar</option>
-    </select>
-  </div>
+  <div class="history-panel">
+    <div class="history-header">
+      <h2>Histórico</h2>
+      <select id="filter-payment-status" class="filter-select">
+        <option value="all">Todos os Lançamentos</option>
+        <option value="Pago">Filtrar: Pago</option>
+        <option value="A pagar">Filtrar: A pagar</option>
+      </select>
+    </div>
 
-  <ul id="transactions-list"></ul>
+    <ul id="transactions-list"></ul>
+  </div>
 </div>
 
 <!-- Firebase SDK via CDN Modulares -->
