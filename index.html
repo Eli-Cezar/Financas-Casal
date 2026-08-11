@@ -39,7 +39,44 @@
       padding-bottom: 8px;
     }
 
-    header { text-align: center; margin-bottom: 2px; }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      text-align: left;
+      margin-bottom: 2px;
+    }
+
+    .header-logo {
+      width: 52px;
+      min-width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(249, 115, 22, 0.35);
+      background: rgba(249, 115, 22, 0.08);
+    }
+
+    .header-logo svg {
+      width: 28px;
+      height: 28px;
+      color: var(--accent);
+      fill: currentColor;
+    }
+
+    .header-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      text-align: left;
+    }
+
+    .header-info h1,
+    .header-info p {
+      margin: 0;
+    }
     header h1 { font-size: 1.6rem; font-weight: 700; color: var(--accent); letter-spacing: -0.5px; }
     header p { font-size: 0.85rem; color: var(--text-muted); margin-top: 2px; }
 
@@ -358,8 +395,19 @@
 <div class="container">
     <div class="top-fixed">
       <header>
-        <h1>Finanças do Casal</h1>
-        <p>Gestão Compartilhada em Tempo Real</p>
+        <div class="header-logo" aria-hidden="true">
+          <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="22" cy="24" r="8" opacity="0.2"/>
+            <path d="M14 54c0-5.523 4.477-10 10-10h4c5.523 0 10 4.477 10 10v2H14v-2Z" opacity="0.2"/>
+            <circle cx="42" cy="22" r="6" opacity="0.35"/>
+            <path d="M36 52c0-4.418 3.582-8 8-8h2c4.418 0 8 3.582 8 8v2H36v-2Z" opacity="0.35"/>
+            <path d="M18 18c0-4.418 3.582-8 8-8s8 3.582 8 8-3.582 8-8 8-8-3.582-8-8Z"/>
+          </svg>
+        </div>
+        <div class="header-info">
+          <h1>Finanças do Casal</h1>
+          <p>Gestão Compartilhada em Tempo Real</p>
+        </div>
       </header>
 
       <!-- Painel de Resumo com Bordas Laranja -->
