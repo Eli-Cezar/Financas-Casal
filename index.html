@@ -1149,39 +1149,39 @@
     renderManagerialChart(monthlyTransactions);
   }
 
+  function createReportSection(listElement, items, title) {
+    listElement.innerHTML = '';
+    let total = 0;
+
+    if (items.length === 0) {
+      listElement.innerHTML = `<li>Nenhum lançamento ${title.toLowerCase()}.</li>`;
+      return total;
+    }
+
+    items.forEach(([_, item]) => {
+      total += Number(item.amount) || 0;
+      const li = document.createElement('li');
+      li.innerHTML = `<div class="item-left"><div class="item-details"><strong>${item.desc}</strong><small>${formatDateLabel(item.dueDate)}</small></div></div><div class="item-right"><span class="item-value ${item.type}">${item.type === 'expense' ? '-' : '+'} ${currencyFormatter.format(item.amount)}</span></div>`;
+      listElement.appendChild(li);
+    });
+
+    return total;
+  }
+
   function renderManagerialReport(transactions) {
     const pendingList = document.getElementById('report-pending-list');
     const paidList = document.getElementById('report-paid-list');
-    pendingList.innerHTML = '';
-    paidList.innerHTML = '';
-
-    let pendingTotal = 0;
-    let paidTotal = 0;
+    const pendingHeader = document.querySelector('#managerial-view h3[style*="--danger"]');
+    const paidHeader = document.querySelector('#managerial-view h3[style*="--primary"]');
 
     const pendingItems = transactions.filter(([_, item]) => resolvePaymentStatus(item) === 'A pagar');
     const paidItems = transactions.filter(([_, item]) => resolvePaymentStatus(item) === 'Pago');
 
-    if (pendingItems.length === 0) {
-      pendingList.innerHTML = '<li>Nenhum lançamento pendente.</li>';
-    } else {
-      pendingItems.forEach(([id, item]) => {
-        pendingTotal += Number(item.amount) || 0;
-        const li = document.createElement('li');
-        li.innerHTML = `<div class="item-left"><div class="item-details"><strong>${item.desc}</strong><small>${formatDateLabel(item.dueDate)}</small></div></div><div class="item-right"><span class="item-value ${item.type}">${item.type === 'expense' ? '-' : '+'} ${currencyFormatter.format(item.amount)}</span></div>`;
-        pendingList.appendChild(li);
-      });
-    }
+    const pendingTotal = createReportSection(pendingList, pendingItems, 'pendente');
+    const paidTotal = createReportSection(paidList, paidItems, 'pago');
 
-    if (paidItems.length === 0) {
-      paidList.innerHTML = '<li>Nenhum lançamento pago.</li>';
-    } else {
-      paidItems.forEach(([id, item]) => {
-        paidTotal += Number(item.amount) || 0;
-        const li = document.createElement('li');
-        li.innerHTML = `<div class="item-left"><div class="item-details"><strong>${item.desc}</strong><small>${formatDateLabel(item.dueDate)}</small></div></div><div class="item-right"><span class="item-value ${item.type}">${item.type === 'expense' ? '-' : '+'} ${currencyFormatter.format(item.amount)}</span></div>`;
-        paidList.appendChild(li);
-      });
-    }
+    pendingHeader.textContent = `A Pagar (${currencyFormatter.format(pendingTotal)})`;
+    paidHeader.textContent = `Pago (${currencyFormatter.format(paidTotal)})`;
   }
 
   function renderManagerialChart(transactions) {
@@ -1290,9 +1290,6 @@
           if (item.type === "income") monthlyIncomeSum += amount;
           if (item.type === "expense") monthlyExpenseSum += amount;
         }
-      } else if (filterSummaryPeriod.value === "allTime") {
-        // Se for total geral, os sums já estão sendo acumulados acima
-        // Para evitar duplicação, podemos usar variáveis separadas ou ajustar a lógica
       }
 
       // Filtro de exibição por status de pagamento
