@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Finanças do Casal</title>
+  <!-- Adicionando Chart.js via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
       --bg: #000000;
@@ -43,6 +45,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      justify-content: space-between;
       gap: 14px;
       text-align: left;
       margin-bottom: 2px;
@@ -79,6 +82,21 @@
     }
     header h1 { font-size: 1.6rem; font-weight: 700; color: var(--accent); letter-spacing: -0.5px; }
     header p { font-size: 0.85rem; color: var(--text-muted); margin-top: 2px; }
+    .header-actions button {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--accent);
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .header-actions button:hover {
+      background: var(--accent-bg);
+      color: var(--accent);
+      border-color: rgba(249, 115, 22, 0.4);
+    }
 
     /* Cards e Containers */
     .balance-card, .form-card {
@@ -95,8 +113,8 @@
       grid-template-columns: repeat(3, 1fr);
       gap: 10px;
       text-align: center;
-      border: 1px solid rgba(249, 115, 22, 0.35);
-      background: var(--card-bg);
+      border: 1px solid rgba(249, 115, 22, 0.3);
+      background: rgba(249, 115, 22, 0.05);
     }
     .balance-item {
       padding: 10px 4px;
@@ -119,6 +137,19 @@
       font-weight: 700; 
     }
     
+    .total-balance-display {
+      text-align: center;
+      font-size: 1.1rem;
+      color: #fb923c;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 16px;
+      border-radius: var(--radius);
+      background: rgba(249, 115, 22, 0.05);
+      border: 1px solid rgba(249, 115, 22, 0.3);
+    }
+    .total-balance-display strong { font-size: 1.5rem; font-weight: 800; display: block; margin-top: 4px; }
     /* Cores dos Valores no Painel */
     .income { color: var(--primary) !important; }
     .expense { color: var(--danger) !important; }
@@ -143,6 +174,11 @@
     input:focus, select:focus {
       border-color: var(--border-focus);
       box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.25);
+    }
+    /* Correção para o fundo das opções do select em modo escuro */
+    select option {
+      background: #18181b; /* Um fundo escuro para as opções */
+      color: var(--text);
     }
 
     /* Botão Laranja */
@@ -250,7 +286,19 @@
       border-radius: 8px;
       border: 1px solid var(--border);
       background-color: var(--card-bg);
-      color: var(--text);
+      color: var(--accent);
+      transition: all 0.2s ease;
+    }
+    .filter-select:focus {
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.25);
+    }
+    .orange-border {
+      border: 1px solid rgba(249, 115, 22, 0.3);
+      background: rgba(249, 115, 22, 0.05);
+    }
+    .orange-border:focus {
+      border-color: var(--border-focus);
     }
 
     ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
@@ -355,6 +403,116 @@
       border-color: rgba(239, 68, 68, 0.3);
       background: rgba(239, 68, 68, 0.12);
     }
+    .launch-content {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      max-height: 260px;
+      overflow-y: auto;
+      padding-right: 4px;
+      transition: max-height 0.2s ease, opacity 0.2s ease;
+    }
+    .report-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .report-list li {
+      padding: 12px 14px;
+    }
+    .launch-content {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      max-height: 260px;
+      overflow-y: auto;
+      padding-right: 4px;
+      transition: max-height 0.2s ease, opacity 0.2s ease;
+    }
+    .launch-content.collapsed {
+      display: none;
+    }
+    .launch-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      cursor: pointer;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(249, 115, 22, 0.18);
+      background: rgba(255, 255, 255, 0.06);
+    }
+    .launch-toggle:hover {
+      background: rgba(249, 115, 22, 0.12);
+    }
+    .launch-toggle h2 {
+      margin: 0;
+      font-size: 1rem;
+    }
+    .collapse-icon {
+      transition: transform 0.2s ease;
+      font-size: 1.1rem;
+      color: var(--text);
+    }
+    .launch-toggle[aria-expanded="true"] .collapse-icon {
+      transform: rotate(180deg);
+    }
+    .toggle-btn {
+      margin-left: 8px;
+      min-width: 44px;
+      height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 8px;
+      border-radius: 10px;
+    }
+    .toggle-btn[aria-expanded="true"] {
+      transform: rotate(180deg);
+    }
+    .launch-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(249, 115, 22, 0.15);
+      background: rgba(255, 255, 255, 0.04);
+    }
+    .launch-item:hover {
+      background: rgba(249, 115, 22, 0.12);
+      transform: translateY(-1px);
+    }
+    .launch-item .item-details {
+      min-width: 0;
+    }
+    .launch-item .item-details strong {
+      font-size: 0.95rem;
+    }
+    .launch-item .item-details small {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      margin-top: 4px;
+    }
+    .launch-actions {
+      display: flex;
+      gap: 6px;
+    }
+    .launch-placeholder {
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px dashed rgba(248, 113, 113, 0.25);
+      color: var(--text-muted);
+      background: rgba(248, 113, 113, 0.08);
+    }
 
     @media (max-width: 480px) {
       body {
@@ -401,39 +559,55 @@
   </style>
 </head>
 <body>
-
-<div class="container">
+<div id="main-view" class="container">
     <div class="top-fixed">
       <header>
-        <div class="header-logo" aria-hidden="true">
-          <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="22" cy="24" r="8" opacity="0.2"/>
-            <path d="M14 54c0-5.523 4.477-10 10-10h4c5.523 0 10 4.477 10 10v2H14v-2Z" opacity="0.2"/>
-            <circle cx="42" cy="22" r="6" opacity="0.35"/>
-            <path d="M36 52c0-4.418 3.582-8 8-8h2c4.418 0 8 3.582 8 8v2H36v-2Z" opacity="0.35"/>
-            <path d="M18 18c0-4.418 3.582-8 8-8s8 3.582 8 8-3.582 8-8 8-8-3.582-8-8Z"/>
-          </svg>
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <div class="header-logo" aria-hidden="true">
+            <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="22" cy="24" r="8" opacity="0.2"/>
+              <path d="M14 54c0-5.523 4.477-10 10-10h4c5.523 0 10 4.477 10 10v2H14v-2Z" opacity="0.2"/>
+              <circle cx="42" cy="22" r="6" opacity="0.35"/>
+              <path d="M36 52c0-4.418 3.582-8 8-8h2c4.418 0 8 3.582 8 8v2H36v-2Z" opacity="0.35"/>
+              <path d="M18 18c0-4.418 3.582-8 8-8s8 3.582 8 8-3.582 8-8 8-8-3.582-8-8Z"/>
+            </svg>
+          </div>
+          <div class="header-info">
+            <h1>Finanças do Casal</h1>
+            <p>Gestão Compartilhada em Tempo Real</p>
+          </div>
         </div>
-        <div class="header-info">
-          <h1>Finanças do Casal</h1>
-          <p>Gestão Compartilhada em Tempo Real</p>
+        <div class="header-actions">
+          <button id="managerial-btn">Gerencial</button>
         </div>
       </header>
 
       <!-- Painel de Resumo com Bordas Laranja -->
+      <div class="history-header" style="margin-bottom: 10px;">
+        <select id="filter-summary-period" class="filter-select orange-border">
+          <option value="currentMonth">Resumo: Mês Atual</option>
+          <option value="allTime">Resumo: Total Geral</option>
+        </select>
+      </div>
+
       <div class="balance-card">
       <div class="balance-item">
-        <span>Entradas</span>
+        <span id="label-income">Receitas</span>
         <strong class="income" id="total-income">R$ 0,00</strong>
       </div>
     <div class="balance-item">
-      <span>Saídas</span>
+      <span id="label-expense">Despesas</span>
       <strong class="expense" id="total-expense">R$ 0,00</strong>
     </div>
     <div class="balance-item">
-      <span>Saldo</span>
-      <strong id="total-balance">R$ 0,00</strong>
+      <span>Saldo do Mês</span>
+      <strong id="monthly-balance">R$ 0,00</strong>
     </div>
+  </div>
+
+  <div class="total-balance-display">
+    Saldo Geral
+    <strong id="total-balance">R$ 0,00</strong>
   </div>
   </div>
 
@@ -443,22 +617,32 @@
       <div class="input-with-action">
         <input type="text" id="desc" placeholder="Descrição (ex: Mercado, Aluguel)" autocomplete="off" required />
         <button type="button" id="add-launch-btn" class="secondary-btn">Cadastrar</button>
+        <button type="button" id="launch-panel-toggle" class="secondary-btn toggle-btn" aria-expanded="false" aria-label="Mostrar modelos">▼</button>
       </div>
 
       <div id="form-message" class="form-message" role="status" aria-live="polite"></div>
 
       <div id="desc-suggestions" class="suggestions"></div>
 
+      <div class="launch-panel">
+        <div class="history-header">
+          <h2>Modelos de lançamento</h2>
+        </div>
+        <div class="launch-content collapsed">
+          <ul id="launch-list"></ul>
+        </div>
+      </div>
+
       <div class="form-group">
         <input type="number" step="0.01" id="amount" placeholder="Valor (R$)" required />
         <select id="type">
-          <option value="expense">Saída (Despesa)</option>
-          <option value="income">Entrada (Receita)</option>
+          <option value="expense">Despesa</option>
+          <option value="income">Receita</option>
         </select>
       </div>
 
       <div class="form-group">
-        <input type="date" id="due-date" />
+        <input type="date" id="due-date" required />
         <select id="payment-status">
           <option value="auto">Automático</option>
           <option value="Pago">Pago</option>
@@ -475,6 +659,7 @@
       </div>
 
       <button type="submit">Adicionar Transação</button>
+
     </form>
     </div>
 
@@ -482,7 +667,7 @@
   <div class="history-panel">
     <div class="history-header">
       <h2>Histórico</h2>
-      <select id="filter-payment-status" class="filter-select">
+      <select id="filter-payment-status" class="filter-select orange-border">
         <option value="all">Todos os Lançamentos</option>
         <option value="Pago">Filtrar: Pago</option>
         <option value="A pagar">Filtrar: A pagar</option>
@@ -490,6 +675,32 @@
     </div>
 
     <ul id="transactions-list"></ul>
+  </div>
+</div>
+
+<!-- Tela Gerencial (oculta por padrão) -->
+<div id="managerial-view" class="container" style="display: none;">
+  <header>
+    <div class="header-info">
+      <h1>Painel Gerencial</h1>
+      <p>Relatórios e Gráficos do Mês Atual</p>
+    </div>
+    <div class="header-actions">
+      <button id="back-to-main-btn">Voltar</button>
+    </div>
+  </header>
+
+  <div class="form-card">
+    <div class="history-header"><h2>Gráfico de Despesas por Categoria</h2></div>
+    <canvas id="expenses-chart"></canvas>
+  </div>
+
+  <div class="form-card">
+    <div class="history-header"><h2>Relatório do Mês</h2></div>
+    <h3 style="color: var(--danger); margin-top: 15px; margin-bottom: 5px;">A Pagar</h3>
+    <ul id="report-pending-list" class="report-list"><li>Nenhum lançamento pendente.</li></ul>
+    <h3 style="color: var(--primary); margin-top: 20px; margin-bottom: 5px;">Pago</h3>
+    <ul id="report-paid-list" class="report-list"><li>Nenhum lançamento pago.</li></ul>
   </div>
 </div>
 
@@ -514,11 +725,21 @@
   const db = getDatabase(app);
   const dbRef = ref(db, "transacoes");
 
+  // Elementos das Telas
+  const mainView = document.getElementById('main-view');
+  const managerialView = document.getElementById('managerial-view');
+  const managerialBtn = document.getElementById('managerial-btn');
+  const backToMainBtn = document.getElementById('back-to-main-btn');
+
   const form = document.getElementById("finance-form");
   const list = document.getElementById("transactions-list");
   const filterPaymentStatus = document.getElementById("filter-payment-status");
   const descInput = document.getElementById("desc");
+  const filterSummaryPeriod = document.getElementById("filter-summary-period");
+  const labelIncome = document.getElementById("label-income");
+  const labelExpense = document.getElementById("label-expense");
   const suggestionsBox = document.getElementById("desc-suggestions");
+  const launchList = document.getElementById("launch-list");
   const addLaunchBtn = document.getElementById("add-launch-btn");
   const submitButton = form.querySelector("button[type='submit']");
 
@@ -539,6 +760,8 @@
   let launchCatalog = {};
   let selectedLaunchId = null;
   let editingTransactionId = null;
+  let editingLaunchId = null;
+  let expensesChart = null;
 
   const launchRef = ref(db, "lancamentos");
 
@@ -582,7 +805,9 @@
     descInput.value = "";
     selectedLaunchId = null;
     editingTransactionId = null;
+    editingLaunchId = null;
     submitButton.textContent = "Adicionar Transação";
+    addLaunchBtn.textContent = "Cadastrar";
     suggestionsBox.innerHTML = "";
     suggestionsBox.classList.remove("show");
   }
@@ -630,6 +855,22 @@
     document.getElementById("payment-status").value = item.paymentStatus && item.paymentStatus !== "auto" ? item.paymentStatus : "auto";
     document.getElementById("category").value = item.category || "Geral";
     selectedLaunchId = id;
+    editingLaunchId = null;
+    addLaunchBtn.textContent = "Cadastrar";
+    suggestionsBox.classList.remove("show");
+  }
+
+  function populateLaunchForEdit(id) {
+    const item = launchCatalog[id];
+    if (!item) return;
+
+    descInput.value = item.label || "";
+    document.getElementById("type").value = item.type || "expense";
+    document.getElementById("payment-status").value = item.paymentStatus && item.paymentStatus !== "auto" ? item.paymentStatus : "auto";
+    document.getElementById("category").value = item.category || "Geral";
+    selectedLaunchId = id;
+    editingLaunchId = id;
+    addLaunchBtn.textContent = "Salvar modelo";
     suggestionsBox.classList.remove("show");
   }
 
@@ -637,16 +878,82 @@
     const newName = descInput.value.trim();
     if (!newName) return;
 
-    const newLaunchRef = push(launchRef, {
+    const payload = {
       label: newName,
       type: document.getElementById("type").value,
       paymentStatus: document.getElementById("payment-status").value,
       category: document.getElementById("category").value,
       timestamp: Date.now()
+    };
+
+    if (editingLaunchId) {
+      update(ref(db, `lancamentos/${editingLaunchId}`), payload);
+      editingLaunchId = null;
+      addLaunchBtn.textContent = "Cadastrar";
+    } else {
+      const newLaunchRef = push(ref(db, "lancamentos"), payload);
+      selectedLaunchId = newLaunchRef.key;
+    }
+
+    renderSuggestions();
+    renderLaunchCatalog();
+  }
+
+  function renderLaunchCatalog() {
+    launchList.innerHTML = "";
+    const entries = Object.entries(launchCatalog || {}).sort((a, b) => {
+      return (a[1].label || "").localeCompare(b[1].label || "");
     });
 
-    selectedLaunchId = newLaunchRef.key;
-    renderSuggestions();
+    if (!entries.length) {
+      const placeholder = document.createElement('li');
+      placeholder.className = 'launch-placeholder';
+      placeholder.textContent = 'Nenhum modelo cadastrado ainda.';
+      launchList.appendChild(placeholder);
+      return;
+    }
+
+    entries.forEach(([id, item]) => {
+      const li = document.createElement('li');
+      li.className = 'launch-item';
+
+      const details = document.createElement('div');
+      details.className = 'item-details';
+
+      const title = document.createElement('strong');
+      title.textContent = item.label || '';
+
+      const meta = document.createElement('small');
+      meta.textContent = item.category ? `${item.category} • ${item.type === 'income' ? 'Receita' : 'Despesa'}` : item.type;
+
+      details.appendChild(title);
+      details.appendChild(meta);
+
+      const actions = document.createElement('div');
+      actions.className = 'launch-actions';
+
+      const editBtn = document.createElement('button');
+      editBtn.type = 'button';
+      editBtn.className = 'edit-btn';
+      editBtn.textContent = '✎';
+      editBtn.addEventListener('click', () => populateLaunchForEdit(id));
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.type = 'button';
+      deleteBtn.className = 'delete-btn';
+      deleteBtn.textContent = '✕';
+      deleteBtn.addEventListener('click', () => {
+        if (confirm('Excluir este modelo de lançamento?')) {
+          remove(ref(db, `lancamentos/${id}`));
+        }
+      });
+
+      actions.appendChild(editBtn);
+      actions.appendChild(deleteBtn);
+      li.appendChild(details);
+      li.appendChild(actions);
+      launchList.appendChild(li);
+    });
   }
 
   function populateFormForEdit(id) {
@@ -686,6 +993,12 @@
       if (Number.isNaN(amount) || amount <= 0) {
         showFormMessage('Informe um valor válido maior que zero.', 'error');
         document.getElementById('amount').focus();
+        return;
+      }
+
+      if (!dueDate) {
+        showFormMessage('Informe a data de vencimento.', 'error');
+        document.getElementById('due-date').focus();
         return;
       }
 
@@ -752,6 +1065,42 @@
     document.getElementById("amount").focus();
   });
 
+  const launchPanelToggle = document.getElementById('launch-panel-toggle');
+  const launchContent = document.querySelector('.launch-content');
+
+  function toggleLaunchPanel() {
+    const isExpanded = launchPanelToggle.getAttribute('aria-expanded') === 'true';
+    launchPanelToggle.setAttribute('aria-expanded', String(!isExpanded));
+    if (isExpanded) {
+      launchContent.classList.add('collapsed');
+    } else {
+      launchContent.classList.remove('collapsed');
+    }
+  }
+
+  launchPanelToggle.addEventListener('click', toggleLaunchPanel);
+  launchPanelToggle.addEventListener('keypress', (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      toggleLaunchPanel();
+    }
+  });
+
+  // Fecha o painel de modelos ao clicar fora dele ou do botão
+  document.addEventListener('click', (ev) => {
+    try {
+      const isExpanded = launchPanelToggle.getAttribute('aria-expanded') === 'true';
+      if (!isExpanded) return;
+      const clickedInside = launchContent.contains(ev.target) || launchPanelToggle.contains(ev.target);
+      if (!clickedInside) {
+        launchPanelToggle.setAttribute('aria-expanded', 'false');
+        launchContent.classList.add('collapsed');
+      }
+    } catch (e) {
+      // se elementos ainda não existirem, ignorar
+    }
+  });
+
   suggestionsBox.addEventListener("click", (event) => {
     const suggestionBtn = event.target.closest("button[data-launch-id]");
     if (suggestionBtn) {
@@ -781,6 +1130,123 @@
     });
   }
 
+  // --- LÓGICA DA TELA GERENCIAL ---
+
+  function renderManagerialData() {
+    if (!globalData) return;
+
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+
+    const monthlyTransactions = Object.entries(globalData).filter(([_, item]) => {
+      if (!item.dueDate) return false;
+      const [year, month] = item.dueDate.split('-').map(Number);
+      return year === currentYear && (month - 1) === currentMonth;
+    });
+
+    renderManagerialReport(monthlyTransactions);
+    renderManagerialChart(monthlyTransactions);
+  }
+
+  function renderManagerialReport(transactions) {
+    const pendingList = document.getElementById('report-pending-list');
+    const paidList = document.getElementById('report-paid-list');
+    pendingList.innerHTML = '';
+    paidList.innerHTML = '';
+
+    let pendingTotal = 0;
+    let paidTotal = 0;
+
+    const pendingItems = transactions.filter(([_, item]) => resolvePaymentStatus(item) === 'A pagar');
+    const paidItems = transactions.filter(([_, item]) => resolvePaymentStatus(item) === 'Pago');
+
+    if (pendingItems.length === 0) {
+      pendingList.innerHTML = '<li>Nenhum lançamento pendente.</li>';
+    } else {
+      pendingItems.forEach(([id, item]) => {
+        pendingTotal += Number(item.amount) || 0;
+        const li = document.createElement('li');
+        li.innerHTML = `<div class="item-left"><div class="item-details"><strong>${item.desc}</strong><small>${formatDateLabel(item.dueDate)}</small></div></div><div class="item-right"><span class="item-value ${item.type}">${item.type === 'expense' ? '-' : '+'} ${currencyFormatter.format(item.amount)}</span></div>`;
+        pendingList.appendChild(li);
+      });
+    }
+
+    if (paidItems.length === 0) {
+      paidList.innerHTML = '<li>Nenhum lançamento pago.</li>';
+    } else {
+      paidItems.forEach(([id, item]) => {
+        paidTotal += Number(item.amount) || 0;
+        const li = document.createElement('li');
+        li.innerHTML = `<div class="item-left"><div class="item-details"><strong>${item.desc}</strong><small>${formatDateLabel(item.dueDate)}</small></div></div><div class="item-right"><span class="item-value ${item.type}">${item.type === 'expense' ? '-' : '+'} ${currencyFormatter.format(item.amount)}</span></div>`;
+        paidList.appendChild(li);
+      });
+    }
+  }
+
+  function renderManagerialChart(transactions) {
+    const ctx = document.getElementById('expenses-chart').getContext('2d');
+    const expensesByCategory = transactions
+      .filter(([_, item]) => item.type === 'expense')
+      .reduce((acc, [_, item]) => {
+        const category = item.category || 'Geral';
+        acc[category] = (acc[category] || 0) + Number(item.amount);
+        return acc;
+      }, {});
+
+    const labels = Object.keys(expensesByCategory);
+    const data = Object.values(expensesByCategory);
+
+    if (expensesChart) {
+      expensesChart.destroy();
+    }
+
+    expensesChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Despesas por Categoria',
+          data: data,
+          backgroundColor: 'rgba(249, 115, 22, 0.6)',
+          borderColor: 'rgba(249, 115, 22, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        indexAxis: 'y', // Gráfico de barras horizontais
+        responsive: true,
+        plugins: {
+          legend: {
+            display: false
+          }
+        },
+        scales: {
+          x: {
+            beginAtZero: true,
+            ticks: { color: 'white' },
+            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+          },
+          y: {
+            ticks: { color: 'white' },
+            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+          }
+        }
+      }
+    });
+  }
+
+  managerialBtn.addEventListener('click', () => {
+    mainView.style.display = 'none';
+    managerialView.style.display = 'flex';
+    renderManagerialData();
+  });
+
+  backToMainBtn.addEventListener('click', () => {
+    managerialView.style.display = 'none';
+    mainView.style.display = 'block';
+  });
+
   function updatePaymentStatus(id, newStatus) {
     if (!globalData?.[id]) return;
 
@@ -798,7 +1264,13 @@
     list.innerHTML = "";
     let incomeSum = 0;
     let expenseSum = 0;
+    let monthlyIncomeSum = 0;
+    let monthlyExpenseSum = 0;
     const selectedFilter = filterPaymentStatus.value;
+
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
 
     Object.keys(globalData).forEach((id) => {
       const item = globalData[id];
@@ -808,6 +1280,20 @@
       const amount = Number(item.amount) || 0;
       if (item.type === "income") incomeSum += amount;
       if (item.type === "expense") expenseSum += amount;
+
+      // Lógica para o resumo do mês atual
+      if (filterSummaryPeriod.value === "currentMonth" && item.dueDate) {
+        const [year, month, day] = item.dueDate.split('-').map(Number);
+        const itemDate = new Date(year, month - 1, day);
+
+        if (itemDate.getMonth() === currentMonth && itemDate.getFullYear() === currentYear) {
+          if (item.type === "income") monthlyIncomeSum += amount;
+          if (item.type === "expense") monthlyExpenseSum += amount;
+        }
+      } else if (filterSummaryPeriod.value === "allTime") {
+        // Se for total geral, os sums já estão sendo acumulados acima
+        // Para evitar duplicação, podemos usar variáveis separadas ou ajustar a lógica
+      }
 
       // Filtro de exibição por status de pagamento
       if (selectedFilter !== "all" && resolvePaymentStatus(item) !== selectedFilter) {
@@ -876,12 +1362,7 @@
       deleteBtn.className = 'delete-btn';
       deleteBtn.type = 'button';
       deleteBtn.textContent = '✕';
-      deleteBtn.addEventListener('click', () => {
-        if (confirm('Confirmar exclusão deste lançamento?')) {
-          remove(ref(db, `transacoes/${id}`));
-        }
-      });
-
+      deleteBtn.dataset.deleteId = id; // Adiciona um identificador para o botão de exclusão
       actions.appendChild(editBtn);
       actions.appendChild(deleteBtn);
 
@@ -894,19 +1375,36 @@
       list.appendChild(li);
     });
 
-    // Atualizar resumos
-    document.getElementById("total-income").innerText = currencyFormatter.format(incomeSum);
-    document.getElementById("total-expense").innerText = currencyFormatter.format(expenseSum);
+    // O saldo geral sempre será o total
+    const totalBalance = incomeSum - expenseSum;
+    const totalBalanceEl = document.getElementById("total-balance");
+    totalBalanceEl.innerText = currencyFormatter.format(totalBalance);
 
-    const balance = incomeSum - expenseSum;
-    const balanceEl = document.getElementById("total-balance");
-    balanceEl.innerText = currencyFormatter.format(balance);
-
-    // Cor condicional do Saldo
-    if (balance >= 0) {
-      balanceEl.style.color = "var(--primary)";
+    // Atualizar resumos com base na seleção do período
+    let incomeLabel = "";
+    let expenseLabel = "";
+    if (filterSummaryPeriod.value === "currentMonth") {
+      document.getElementById("total-income").innerText = currencyFormatter.format(monthlyIncomeSum);
+      document.getElementById("total-expense").innerText = currencyFormatter.format(monthlyExpenseSum);
+      const monthlyBalance = monthlyIncomeSum - monthlyExpenseSum;
+      document.getElementById("monthly-balance").innerText = currencyFormatter.format(monthlyBalance);
+      incomeLabel = "Receitas do Mês";
+      expenseLabel = "Despesas do Mês";
     } else {
-      balanceEl.style.color = "var(--danger)";
+      document.getElementById("total-income").innerText = currencyFormatter.format(incomeSum);
+      document.getElementById("total-expense").innerText = currencyFormatter.format(expenseSum);
+      // Quando for "Total Geral", o saldo do "mês" é o próprio saldo geral.
+      document.getElementById("monthly-balance").innerText = currencyFormatter.format(totalBalance);
+      incomeLabel = "Receitas Gerais";
+      expenseLabel = "Despesas Gerais";
+    }
+    labelIncome.textContent = incomeLabel;
+    labelExpense.textContent = expenseLabel;
+    // Cor condicional do Saldo
+    if (totalBalance >= 0) {
+      totalBalanceEl.style.color = "var(--primary)";
+    } else {
+      totalBalanceEl.style.color = "var(--danger)";
     }
   }
 
@@ -920,17 +1418,29 @@
   onValue(launchRef, (snapshot) => {
     launchCatalog = snapshot.val() || {};
     renderSuggestions();
+    renderLaunchCatalog();
   });
 
   // Evento de filtro
   filterPaymentStatus.addEventListener("change", renderList);
 
-  list.addEventListener("click", (event) => {
-    const button = event.target.closest("button[data-id]");
-    if (!button) return;
+  // Evento de filtro para o período do resumo
+  filterSummaryPeriod.addEventListener("change", renderList);
 
-    const nextStatus = button.textContent === "Pago" ? "A pagar" : "Pago";
-    updatePaymentStatus(button.dataset.id, nextStatus);
+  list.addEventListener("click", (event) => {
+    const statusButton = event.target.closest("button[data-id]");
+    if (statusButton) {
+      const nextStatus = statusButton.textContent === "Pago" ? "A pagar" : "Pago";
+      updatePaymentStatus(statusButton.dataset.id, nextStatus);
+      return;
+    }
+
+    const deleteButton = event.target.closest("button[data-delete-id]");
+    if (deleteButton) {
+      if (confirm('Confirmar exclusão deste lançamento?')) {
+        remove(ref(db, `transacoes/${deleteButton.dataset.deleteId}`));
+      }
+    }
   });
 
   setInterval(syncAutomaticStatuses, 60000);
@@ -939,10 +1449,7 @@
     populateFormForEdit(id);
   };
 
-  // Deletar Item
-  window.deleteItem = (id) => {
-    remove(ref(db, `transacoes/${id}`));
-  };
+
 </script>
 
 </body>
