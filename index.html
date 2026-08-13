@@ -670,7 +670,9 @@
       <select id="filter-payment-status" class="filter-select orange-border">
         <option value="all">Todos os Lançamentos</option>
         <option value="Pago">Filtrar: Pago</option>
+        <option value="Recebido">Filtrar: Recebido</option>
         <option value="A pagar">Filtrar: A pagar</option>
+        <option value="A receber">Filtrar: A receber</option>
       </select>
     </div>
 
@@ -697,10 +699,14 @@
 
   <div class="form-card">
     <div class="history-header"><h2>Relatório do Mês</h2></div>
-    <h3 style="color: var(--danger); margin-top: 15px; margin-bottom: 5px;">A Pagar</h3>
-    <ul id="report-pending-list" class="report-list"><li>Nenhum lançamento pendente.</li></ul>
-    <h3 style="color: var(--primary); margin-top: 20px; margin-bottom: 5px;">Pago</h3>
-    <ul id="report-paid-list" class="report-list"><li>Nenhum lançamento pago.</li></ul>
+    <h3 style="color: var(--danger); margin-top: 15px; margin-bottom: 5px;" id="report-pending-expense-header">A Pagar</h3>
+    <ul id="report-pending-expense-list" class="report-list"></ul>
+    <h3 style="color: var(--primary); margin-top: 20px; margin-bottom: 5px;" id="report-paid-expense-header">Pago</h3>
+    <ul id="report-paid-expense-list" class="report-list"></ul>
+    <h3 style="color: var(--danger); margin-top: 20px; margin-bottom: 5px;" id="report-pending-income-header">A Receber</h3>
+    <ul id="report-pending-income-list" class="report-list"></ul>
+    <h3 style="color: var(--primary); margin-top: 20px; margin-bottom: 5px;" id="report-paid-income-header">Recebido</h3>
+    <ul id="report-paid-income-list" class="report-list"></ul>
   </div>
 </div>
 
@@ -783,15 +789,19 @@
   }
 
   function resolvePaymentStatus(item) {
-    if (!item?.dueDate) {
-      return item?.paymentStatus || "A pagar";
-    }
-
+    let baseStatus;
     if (item.statusSource === "manual") {
-      return item.paymentStatus || "A pagar";
+      baseStatus = item.paymentStatus || "A pagar";
+    } else {
+      baseStatus = getAutoPaymentStatus(item.dueDate);
     }
 
-    return getAutoPaymentStatus(item.dueDate);
+    if (item.type === 'income') {
+      return baseStatus === 'Pago' ? 'Recebido' : 'A receber';
+    }
+    
+    // Para despesas ou tipos não definidos
+    return baseStatus;
   }
 
   function formatDateLabel(value) {
@@ -1169,19 +1179,25 @@
   }
 
   function renderManagerialReport(transactions) {
-    const pendingList = document.getElementById('report-pending-list');
-    const paidList = document.getElementById('report-paid-list');
-    const pendingHeader = document.querySelector('#managerial-view h3[style*="--danger"]');
-    const paidHeader = document.querySelector('#managerial-view h3[style*="--primary"]');
+    const pendingExpenseList = document.getElementById('report-pending-expense-list');
+    const paidExpenseList = document.getElementById('report-paid-expense-list');
+    const pendingIncomeList = document.getElementById('report-pending-income-list');
+    const paidIncomeList = document.getElementById('report-paid-income-list');
 
-    const pendingItems = transactions.filter(([_, item]) => resolvePaymentStatus(item) === 'A pagar');
-    const paidItems = transactions.filter(([_, item]) => resolvePaymentStatus(item) === 'Pago');
+    const pendingExpenses = transactions.filter(([_, item]) => item.type === 'expense' && resolvePaymentStatus(item) === 'A pagar');
+    const paidExpenses = transactions.filter(([_, item]) => item.type === 'expense' && resolvePaymentStatus(item) === 'Pago');
+    const pendingIncomes = transactions.filter(([_, item]) => item.type === 'income' && resolvePaymentStatus(item) === 'A receber');
+    const paidIncomes = transactions.filter(([_, item]) => item.type === 'income' && resolvePaymentStatus(item) === 'Recebido');
 
-    const pendingTotal = createReportSection(pendingList, pendingItems, 'pendente');
-    const paidTotal = createReportSection(paidList, paidItems, 'pago');
+    const pendingExpenseTotal = createReportSection(pendingExpenseList, pendingExpenses, 'pendente');
+    const paidExpenseTotal = createReportSection(paidExpenseList, paidExpenses, 'pago');
+    const pendingIncomeTotal = createReportSection(pendingIncomeList, pendingIncomes, 'pendente');
+    const paidIncomeTotal = createReportSection(paidIncomeList, paidIncomes, 'recebido');
 
-    pendingHeader.textContent = `A Pagar (${currencyFormatter.format(pendingTotal)})`;
-    paidHeader.textContent = `Pago (${currencyFormatter.format(paidTotal)})`;
+    document.getElementById('report-pending-expense-header').textContent = `A Pagar (${currencyFormatter.format(pendingExpenseTotal)})`;
+    document.getElementById('report-paid-expense-header').textContent = `Pago (${currencyFormatter.format(paidExpenseTotal)})`;
+    document.getElementById('report-pending-income-header').textContent = `A Receber (${currencyFormatter.format(pendingIncomeTotal)})`;
+    document.getElementById('report-paid-income-header').textContent = `Recebido (${currencyFormatter.format(paidIncomeTotal)})`;
   }
 
   function renderManagerialChart(transactions) {
@@ -1330,7 +1346,7 @@
 
       const statusBtn = document.createElement('button');
       statusBtn.type = 'button';
-      statusBtn.className = `status-toggle ${statusClass}`;
+      statusBtn.className = `status-toggle ${item.type === 'income' ? (paymentStatus === 'Recebido' ? 'paid' : 'pending') : statusClass}`;
       statusBtn.dataset.id = id;
       statusBtn.textContent = paymentStatus;
       details.appendChild(statusBtn);
@@ -1427,7 +1443,12 @@
   list.addEventListener("click", (event) => {
     const statusButton = event.target.closest("button[data-id]");
     if (statusButton) {
-      const nextStatus = statusButton.textContent === "Pago" ? "A pagar" : "Pago";
+      const currentStatus = statusButton.textContent;
+      const isIncome = ['Recebido', 'A receber'].includes(currentStatus);
+      
+      // Alterna entre os status 'Pago' e 'A pagar'
+      const nextStatus = (currentStatus === "Pago" || currentStatus === "Recebido") ? "A pagar" : "Pago";
+
       updatePaymentStatus(statusButton.dataset.id, nextStatus);
       return;
     }
