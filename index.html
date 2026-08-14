@@ -97,6 +97,57 @@
       color: var(--accent);
       border-color: rgba(249, 115, 22, 0.4);
     }
+    .header-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+      position: relative;
+    }
+    .notification-btn {
+      position: relative;
+      width: 34px;
+      height: 30px;
+      padding: 0 !important;
+      display: grid;
+      place-items: center;
+      font-size: 1rem;
+    }
+    .notification-count {
+      display: none;
+      position: absolute;
+      top: -6px;
+      right: -7px;
+      min-width: 17px;
+      height: 17px;
+      padding: 0 4px;
+      border-radius: 999px;
+      background: var(--danger);
+      color: #000;
+      font-size: 0.65rem;
+      font-weight: 800;
+      line-height: 17px;
+    }
+    .notification-count.show { display: block; }
+    .notification-popover {
+      display: none;
+      position: absolute;
+      z-index: 40;
+      top: 38px;
+      right: 0;
+      width: min(310px, calc(100vw - 32px));
+      padding: 12px;
+      border: 1px solid rgba(248, 113, 113, 0.4);
+      border-radius: 10px;
+      background: #18181b;
+      box-shadow: var(--shadow);
+    }
+    .notification-popover.show { display: block; }
+    .notification-popover h2 { font-size: 0.95rem; color: var(--danger); margin-bottom: 8px; }
+    .notification-list { gap: 6px; max-height: 230px; overflow-y: auto; }
+    .notification-list li { padding: 9px 10px; box-shadow: none; border-radius: 8px; }
+    .notification-list strong { font-size: 0.85rem; }
+    .notification-list small { display: block; color: var(--text-muted); margin-top: 3px; }
 
     /* Cards e Containers */
     .balance-card, .form-card {
@@ -220,6 +271,14 @@
       cursor: pointer;
       white-space: nowrap;
       min-height: 46px;
+    }
+    .catalog-toggle-btn {
+      color: var(--accent);
+      border-color: rgba(249, 115, 22, 0.35);
+    }
+    .catalog-toggle-btn:hover {
+      background: var(--accent-bg);
+      border-color: rgba(249, 115, 22, 0.6);
     }
     .suggestions {
       display: none;
@@ -409,7 +468,7 @@
       gap: 10px;
       margin: 0;
       padding: 0;
-      max-height: 260px;
+      max-height: 420px;
       overflow-y: auto;
       padding-right: 4px;
       transition: max-height 0.2s ease, opacity 0.2s ease;
@@ -431,7 +490,7 @@
       gap: 10px;
       margin: 0;
       padding: 0;
-      max-height: 260px;
+      max-height: 420px;
       overflow-y: auto;
       padding-right: 4px;
       transition: max-height 0.2s ease, opacity 0.2s ease;
@@ -506,12 +565,110 @@
       display: flex;
       gap: 6px;
     }
+    .catalog-section {
+      padding-top: 10px;
+      border-top: 1px solid rgba(249, 115, 22, 0.18);
+    }
+    .catalog-section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .catalog-section-header h3 {
+      font-size: 0.95rem;
+      color: var(--accent);
+    }
+    .icon-action-btn {
+      width: 34px;
+      height: 34px;
+      padding: 0;
+      display: inline-grid;
+      place-items: center;
+      font-size: 1.25rem;
+    }
     .launch-placeholder {
       padding: 12px 14px;
       border-radius: 10px;
       border: 1px dashed rgba(248, 113, 113, 0.25);
       color: var(--text-muted);
       background: rgba(248, 113, 113, 0.08);
+    }
+
+    /* Botões de Toggle para Relatório */
+    .report-toggle {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      margin-top: 12px;
+      border: 1px solid rgba(249, 115, 22, 0.25);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: left;
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    .report-toggle:hover {
+      background: rgba(249, 115, 22, 0.12);
+      border-color: rgba(249, 115, 22, 0.4);
+    }
+
+    .report-toggle.danger {
+      border-color: rgba(248, 113, 113, 0.25);
+      color: var(--danger);
+    }
+
+    .report-toggle.danger:hover {
+      background: rgba(248, 113, 113, 0.12);
+      border-color: rgba(248, 113, 113, 0.4);
+    }
+
+    .report-toggle.primary {
+      border-color: rgba(34, 197, 94, 0.25);
+      color: var(--primary);
+    }
+
+    .report-toggle.primary:hover {
+      background: rgba(34, 197, 94, 0.12);
+      border-color: rgba(34, 197, 94, 0.4);
+    }
+
+    .report-toggle-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+    }
+
+    .report-toggle-icon {
+      transition: transform 0.2s ease;
+      display: inline-block;
+      font-size: 0.9rem;
+    }
+
+    .report-toggle[aria-expanded="true"] .report-toggle-icon {
+      transform: rotate(180deg);
+    }
+
+    .report-toggle-value {
+      white-space: nowrap;
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .report-list.collapsed {
+      display: none;
+    }
+
+    .report-list.show {
+      display: flex;
     }
 
     @media (max-width: 480px) {
@@ -578,7 +735,12 @@
           </div>
         </div>
         <div class="header-actions">
+          <button type="button" id="notification-btn" class="notification-btn" aria-expanded="false" aria-label="Ver lançamentos vencidos ou com vencimento hoje" title="Lançamentos vencidos ou para hoje">🔔<span id="notification-count" class="notification-count"></span></button>
           <button id="managerial-btn">Gerencial</button>
+          <div id="notification-popover" class="notification-popover" role="dialog" aria-label="Avisos de vencimento">
+            <h2>Vencimentos pendentes</h2>
+            <ul id="notification-list" class="notification-list"></ul>
+          </div>
         </div>
       </header>
 
@@ -616,8 +778,7 @@
     <form id="finance-form">
       <div class="input-with-action">
         <input type="text" id="desc" placeholder="Descrição (ex: Mercado, Aluguel)" autocomplete="off" required />
-        <button type="button" id="add-launch-btn" class="secondary-btn">Cadastrar</button>
-        <button type="button" id="launch-panel-toggle" class="secondary-btn toggle-btn" aria-expanded="false" aria-label="Mostrar modelos">▼</button>
+        <button type="button" id="add-launch-btn" class="secondary-btn catalog-toggle-btn" aria-expanded="false" aria-label="Abrir cadastro de categorias">Cadastro – Categorias</button>
       </div>
 
       <div id="form-message" class="form-message" role="status" aria-live="polite"></div>
@@ -625,11 +786,14 @@
       <div id="desc-suggestions" class="suggestions"></div>
 
       <div class="launch-panel">
-        <div class="history-header">
-          <h2>Modelos de lançamento</h2>
-        </div>
         <div class="launch-content collapsed">
-          <ul id="launch-list"></ul>
+          <div class="catalog-section">
+            <div class="catalog-section-header">
+              <h3>Categorias</h3>
+              <button type="button" id="add-category-btn" class="secondary-btn" aria-label="Cadastrar categoria">Cadastrar categoria</button>
+            </div>
+            <ul id="category-list"></ul>
+          </div>
         </div>
       </div>
 
@@ -648,14 +812,7 @@
           <option value="Pago">Pago</option>
           <option value="A pagar">A pagar</option>
         </select>
-        <select id="category">
-          <option value="Geral">🏠 Moradia / Geral</option>
-          <option value="Alimentação">🛒 Alimentação</option>
-          <option value="Transporte">🛵 Transporte / Combustível</option>
-          <option value="Contas">💡 Contas / Serviços</option>
-          <option value="Lazer">🎉 Lazer</option>
-          <option value="Salário">💵 Salário / Renda</option>
-        </select>
+        <select id="category" aria-label="Categoria"></select>
       </div>
 
       <button type="submit">Adicionar Transação</button>
@@ -685,7 +842,7 @@
   <header>
     <div class="header-info">
       <h1>Painel Gerencial</h1>
-      <p>Relatórios e Gráficos do Mês Atual</p>
+      <p>Relatórios e Gráficos Mensais e Anuais</p>
     </div>
     <div class="header-actions">
       <button id="back-to-main-btn">Voltar</button>
@@ -693,20 +850,57 @@
   </header>
 
   <div class="form-card">
-    <div class="history-header"><h2>Gráfico de Despesas por Categoria</h2></div>
-    <canvas id="expenses-chart"></canvas>
+    <div class="history-header"><h2>Relatório do Mês</h2></div>
+    
+    <!-- A Pagar -->
+    <button class="report-toggle danger" data-report="pending-expense" aria-expanded="false">
+      <div class="report-toggle-info">
+        <span>A Pagar</span>
+        <span class="report-toggle-icon">▼</span>
+      </div>
+      <strong id="report-pending-expense-header" class="report-toggle-value">R$ 0,00</strong>
+    </button>
+    <ul id="report-pending-expense-list" class="report-list collapsed"></ul>
+
+    <!-- Pago -->
+    <button class="report-toggle primary" data-report="paid-expense" aria-expanded="false">
+      <div class="report-toggle-info">
+        <span>Pago</span>
+        <span class="report-toggle-icon">▼</span>
+      </div>
+      <strong id="report-paid-expense-header" class="report-toggle-value">R$ 0,00</strong>
+    </button>
+    <ul id="report-paid-expense-list" class="report-list collapsed"></ul>
+
+    <!-- A Receber -->
+    <button class="report-toggle danger" data-report="pending-income" aria-expanded="false">
+      <div class="report-toggle-info">
+        <span>A Receber</span>
+        <span class="report-toggle-icon">▼</span>
+      </div>
+      <strong id="report-pending-income-header" class="report-toggle-value">R$ 0,00</strong>
+    </button>
+    <ul id="report-pending-income-list" class="report-list collapsed"></ul>
+
+    <!-- Recebido -->
+    <button class="report-toggle primary" data-report="paid-income" aria-expanded="false">
+      <div class="report-toggle-info">
+        <span>Recebido</span>
+        <span class="report-toggle-icon">▼</span>
+      </div>
+      <strong id="report-paid-income-header" class="report-toggle-value">R$ 0,00</strong>
+    </button>
+    <ul id="report-paid-income-list" class="report-list collapsed"></ul>
   </div>
 
   <div class="form-card">
-    <div class="history-header"><h2>Relatório do Mês</h2></div>
-    <h3 style="color: var(--danger); margin-top: 15px; margin-bottom: 5px;" id="report-pending-expense-header">A Pagar</h3>
-    <ul id="report-pending-expense-list" class="report-list"></ul>
-    <h3 style="color: var(--primary); margin-top: 20px; margin-bottom: 5px;" id="report-paid-expense-header">Pago</h3>
-    <ul id="report-paid-expense-list" class="report-list"></ul>
-    <h3 style="color: var(--danger); margin-top: 20px; margin-bottom: 5px;" id="report-pending-income-header">A Receber</h3>
-    <ul id="report-pending-income-list" class="report-list"></ul>
-    <h3 style="color: var(--primary); margin-top: 20px; margin-bottom: 5px;" id="report-paid-income-header">Recebido</h3>
-    <ul id="report-paid-income-list" class="report-list"></ul>
+    <div class="history-header"><h2>Gráfico Mensal de Despesas por Categoria</h2></div>
+    <canvas id="monthly-expenses-chart"></canvas>
+  </div>
+
+  <div class="form-card">
+    <div class="history-header"><h2>Gráfico Anual de Despesas por Categoria</h2></div>
+    <canvas id="yearly-expenses-chart"></canvas>
   </div>
 </div>
 
@@ -729,13 +923,18 @@
 
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
-  const dbRef = ref(db, "transacoes");
+  const dbRoot = ""; // Mantém os dados já existentes do ECN na raiz do Firebase
+  const dbRef = ref(db, `${dbRoot}/transacoes`);
 
   // Elementos das Telas
   const mainView = document.getElementById('main-view');
   const managerialView = document.getElementById('managerial-view');
   const managerialBtn = document.getElementById('managerial-btn');
   const backToMainBtn = document.getElementById('back-to-main-btn');
+  const notificationBtn = document.getElementById('notification-btn');
+  const notificationCount = document.getElementById('notification-count');
+  const notificationPopover = document.getElementById('notification-popover');
+  const notificationList = document.getElementById('notification-list');
 
   const form = document.getElementById("finance-form");
   const list = document.getElementById("transactions-list");
@@ -747,6 +946,9 @@
   const suggestionsBox = document.getElementById("desc-suggestions");
   const launchList = document.getElementById("launch-list");
   const addLaunchBtn = document.getElementById("add-launch-btn");
+  const categoryList = document.getElementById("category-list");
+  const categorySelect = document.getElementById("category");
+  const addCategoryBtn = document.getElementById("add-category-btn");
   const submitButton = form.querySelector("button[type='submit']");
 
   const currencyFormatter = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -761,15 +963,137 @@
     "Lazer": "🎉",
     "Salário": "💵"
   };
+  const defaultCategories = [
+    { id: 'geral', name: 'Geral', icon: '🏠' },
+    { id: 'alimentacao', name: 'Alimentação', icon: '🛒' },
+    { id: 'transporte', name: 'Transporte', icon: '🛵' },
+    { id: 'contas', name: 'Contas', icon: '💡' },
+    { id: 'lazer', name: 'Lazer', icon: '🎉' },
+    { id: 'salario', name: 'Salário', icon: '💵' }
+  ];
 
   let globalData = null;
   let launchCatalog = {};
+  let categoryCatalog = {};
+  let isSeedingCategories = false;
   let selectedLaunchId = null;
   let editingTransactionId = null;
   let editingLaunchId = null;
-  let expensesChart = null;
+  let monthlyExpensesChart = null;
+  let yearlyExpensesChart = null;
 
-  const launchRef = ref(db, "lancamentos");
+  const launchRef = ref(db, `${dbRoot}/lancamentos`);
+  const categoryRef = ref(db, `${dbRoot}/categorias`);
+
+  function getCategoryEntries() {
+    const source = Object.keys(categoryCatalog).length ? categoryCatalog : Object.fromEntries(
+      defaultCategories.map((category) => [category.id, category])
+    );
+    return Object.entries(source).sort((a, b) => (a[1].name || '').localeCompare(b[1].name || ''));
+  }
+
+  function getCategoryIcon(categoryName) {
+    const category = Object.values(categoryCatalog).find((item) => item?.name === categoryName);
+    return category?.icon || categoryIcons[categoryName] || '🏷️';
+  }
+
+  function renderCategories() {
+    const entries = getCategoryEntries();
+    const selectedValue = categorySelect.value || 'Geral';
+    categorySelect.innerHTML = '';
+    categoryList.innerHTML = '';
+
+    entries.forEach(([id, category]) => {
+      const name = category.name || 'Sem nome';
+      const option = document.createElement('option');
+      option.value = name;
+      option.textContent = `${category.icon || '🏷️'} ${name}`;
+      categorySelect.appendChild(option);
+
+      const li = document.createElement('li');
+      li.className = 'launch-item';
+      const details = document.createElement('div');
+      details.className = 'item-details';
+      const title = document.createElement('strong');
+      title.textContent = `${category.icon || '🏷️'} ${name}`;
+      details.appendChild(title);
+
+      const actions = document.createElement('div');
+      actions.className = 'launch-actions';
+      const editBtn = document.createElement('button');
+      editBtn.type = 'button';
+      editBtn.className = 'edit-btn';
+      editBtn.textContent = '✎';
+      editBtn.title = 'Editar categoria';
+      editBtn.addEventListener('click', () => editCategory(id));
+      const deleteBtn = document.createElement('button');
+      deleteBtn.type = 'button';
+      deleteBtn.className = 'delete-btn';
+      deleteBtn.textContent = '✕';
+      deleteBtn.title = 'Excluir categoria';
+      deleteBtn.addEventListener('click', () => deleteCategory(id));
+      actions.append(editBtn, deleteBtn);
+      li.append(details, actions);
+      categoryList.appendChild(li);
+    });
+
+    categorySelect.value = entries.some(([_, category]) => category.name === selectedValue)
+      ? selectedValue
+      : (entries.find(([_, category]) => category.name === 'Geral')?.[1].name || entries[0]?.[1].name || '');
+  }
+
+  async function saveCategory(name) {
+    const normalizedName = name.trim();
+    if (!normalizedName) return;
+    const duplicated = getCategoryEntries().some(([_, category]) => category.name.toLocaleLowerCase() === normalizedName.toLocaleLowerCase());
+    if (duplicated) {
+      alert('Já existe uma categoria com este nome.');
+      return;
+    }
+    await push(categoryRef, { name: normalizedName, icon: '🏷️', timestamp: Date.now() });
+  }
+
+  async function editCategory(id) {
+    const category = categoryCatalog[id];
+    if (!category) return;
+    const newName = prompt('Nome da categoria:', category.name || '');
+    if (newName === null || newName.trim() === category.name) return;
+    const normalizedName = newName.trim();
+    if (!normalizedName) return;
+    if (getCategoryEntries().some(([otherId, item]) => otherId !== id && item.name.toLocaleLowerCase() === normalizedName.toLocaleLowerCase())) {
+      alert('Já existe uma categoria com este nome.');
+      return;
+    }
+
+    const updates = { [`categorias/${id}/name`]: normalizedName };
+    Object.entries(globalData || {}).forEach(([transactionId, item]) => {
+      if (item?.category === category.name) updates[`transacoes/${transactionId}/category`] = normalizedName;
+    });
+    Object.entries(launchCatalog || {}).forEach(([launchId, item]) => {
+      if (item?.category === category.name) updates[`lancamentos/${launchId}/category`] = normalizedName;
+    });
+    await update(ref(db, dbRoot), updates);
+  }
+
+  async function deleteCategory(id) {
+    const category = categoryCatalog[id];
+    const entries = getCategoryEntries();
+    if (!category || entries.length <= 1) {
+      alert('Mantenha pelo menos uma categoria cadastrada.');
+      return;
+    }
+    const replacement = entries.find(([otherId, item]) => otherId !== id && item.name === 'Geral') || entries.find(([otherId]) => otherId !== id);
+    if (!confirm(`Excluir a categoria “${category.name}”? Os lançamentos vinculados serão movidos para “${replacement[1].name}”.`)) return;
+
+    const updates = { [`categorias/${id}`]: null };
+    Object.entries(globalData || {}).forEach(([transactionId, item]) => {
+      if (item?.category === category.name) updates[`transacoes/${transactionId}/category`] = replacement[1].name;
+    });
+    Object.entries(launchCatalog || {}).forEach(([launchId, item]) => {
+      if (item?.category === category.name) updates[`lancamentos/${launchId}/category`] = replacement[1].name;
+    });
+    await update(ref(db, dbRoot), updates);
+  }
 
   function toDateOnly(value) {
     if (!value) return null;
@@ -796,12 +1120,67 @@
       baseStatus = getAutoPaymentStatus(item.dueDate);
     }
 
-    if (item.type === 'income') {
+    if (getTransactionType(item) === 'income') {
       return baseStatus === 'Pago' ? 'Recebido' : 'A receber';
     }
     
     // Para despesas ou tipos não definidos
     return baseStatus;
+  }
+
+  function getTransactionType(item) {
+    const type = String(item?.type || '').trim().toLocaleLowerCase('pt-BR');
+    return ['income', 'receita', 'receitas', 'entrada', 'entradas'].includes(type)
+      ? 'income'
+      : 'expense';
+  }
+
+  function getDueNotifications() {
+    const today = new Date();
+    const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+    return Object.entries(globalData || {})
+      .filter(([_, item]) => {
+        if (!item?.dueDate) return false;
+        const dueDate = new Date(`${item.dueDate}T00:00:00`);
+        if (Number.isNaN(dueDate.getTime()) || dueDate > todayStart) return false;
+
+        const status = resolvePaymentStatus(item);
+        return status === 'A pagar' || status === 'A receber';
+      })
+      .sort((a, b) => a[1].dueDate.localeCompare(b[1].dueDate));
+  }
+
+  function renderNotifications() {
+    const notifications = getDueNotifications();
+    notificationList.innerHTML = '';
+    notificationCount.textContent = notifications.length > 99 ? '99+' : notifications.length;
+    notificationCount.classList.toggle('show', notifications.length > 0);
+
+    if (!notifications.length) {
+      const emptyItem = document.createElement('li');
+      emptyItem.textContent = 'Não há vencimentos pendentes para hoje ou anteriores.';
+      notificationList.appendChild(emptyItem);
+      return;
+    }
+
+    notifications.forEach(([_, item]) => {
+      const li = document.createElement('li');
+      const title = document.createElement('strong');
+      title.textContent = item.desc || 'Lançamento sem descrição';
+      const date = document.createElement('small');
+      const isToday = item.dueDate === todayDatePart(new Date());
+      date.textContent = `${isToday ? 'Vence hoje' : 'Vencido'}: ${formatDateLabel(item.dueDate)}`;
+      li.append(title, date);
+      notificationList.appendChild(li);
+    });
+  }
+
+  function todayDatePart(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   function formatDateLabel(value) {
@@ -817,7 +1196,7 @@
     editingTransactionId = null;
     editingLaunchId = null;
     submitButton.textContent = "Adicionar Transação";
-    addLaunchBtn.textContent = "Cadastrar";
+    addLaunchBtn.textContent = "Cadastrar modelo";
     suggestionsBox.innerHTML = "";
     suggestionsBox.classList.remove("show");
   }
@@ -848,12 +1227,7 @@
       return;
     }
 
-    const newBtn = document.createElement('button');
-    newBtn.type = 'button';
-    newBtn.className = 'suggestion-item';
-    newBtn.textContent = '+ Cadastrar novo lançamento';
-    suggestionsBox.appendChild(newBtn);
-    suggestionsBox.classList.add('show');
+    // Sem resultados: o cadastro é feito pelo botão principal.
   }
 
   function selectLaunch(id) {
@@ -866,7 +1240,7 @@
     document.getElementById("category").value = item.category || "Geral";
     selectedLaunchId = id;
     editingLaunchId = null;
-    addLaunchBtn.textContent = "Cadastrar";
+    addLaunchBtn.textContent = "Cadastro – Categorias";
     suggestionsBox.classList.remove("show");
   }
 
@@ -897,11 +1271,11 @@
     };
 
     if (editingLaunchId) {
-      update(ref(db, `lancamentos/${editingLaunchId}`), payload);
+      update(ref(db, `${dbRoot}/lancamentos/${editingLaunchId}`), payload);
       editingLaunchId = null;
-      addLaunchBtn.textContent = "Cadastrar";
+      addLaunchBtn.textContent = "Cadastro – Categorias";
     } else {
-      const newLaunchRef = push(ref(db, "lancamentos"), payload);
+      const newLaunchRef = push(ref(db, `${dbRoot}/lancamentos`), payload);
       selectedLaunchId = newLaunchRef.key;
     }
 
@@ -910,6 +1284,7 @@
   }
 
   function renderLaunchCatalog() {
+    if (!launchList) return;
     launchList.innerHTML = "";
     const entries = Object.entries(launchCatalog || {}).sort((a, b) => {
       return (a[1].label || "").localeCompare(b[1].label || "");
@@ -954,7 +1329,7 @@
       deleteBtn.textContent = '✕';
       deleteBtn.addEventListener('click', () => {
         if (confirm('Excluir este modelo de lançamento?')) {
-          remove(ref(db, `lancamentos/${id}`));
+          remove(ref(db, `${dbRoot}/lancamentos/${id}`));
         }
       });
 
@@ -1041,7 +1416,7 @@
 
       try {
         if (editingTransactionId) {
-          await update(ref(db, `transacoes/${editingTransactionId}`), payload);
+          await update(ref(db, `${dbRoot}/transacoes/${editingTransactionId}`), payload);
         } else {
           await push(dbRef, payload);
         }
@@ -1071,16 +1446,30 @@
   descInput.addEventListener("focus", renderSuggestions);
 
   addLaunchBtn.addEventListener("click", () => {
-    saveLaunchFromForm();
-    document.getElementById("amount").focus();
+    if (editingLaunchId) {
+      saveLaunchFromForm();
+      document.getElementById("amount").focus();
+      return;
+    }
+    toggleLaunchPanel();
   });
 
-  const launchPanelToggle = document.getElementById('launch-panel-toggle');
+  addCategoryBtn.addEventListener('click', async () => {
+    const name = prompt('Nome da nova categoria:');
+    if (name === null) return;
+    try {
+      await saveCategory(name);
+    } catch (err) {
+      console.error('Erro ao cadastrar categoria:', err);
+      alert('Não foi possível cadastrar a categoria.');
+    }
+  });
+
   const launchContent = document.querySelector('.launch-content');
 
   function toggleLaunchPanel() {
-    const isExpanded = launchPanelToggle.getAttribute('aria-expanded') === 'true';
-    launchPanelToggle.setAttribute('aria-expanded', String(!isExpanded));
+    const isExpanded = addLaunchBtn.getAttribute('aria-expanded') === 'true';
+    addLaunchBtn.setAttribute('aria-expanded', String(!isExpanded));
     if (isExpanded) {
       launchContent.classList.add('collapsed');
     } else {
@@ -1088,22 +1477,14 @@
     }
   }
 
-  launchPanelToggle.addEventListener('click', toggleLaunchPanel);
-  launchPanelToggle.addEventListener('keypress', (event) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      toggleLaunchPanel();
-    }
-  });
-
-  // Fecha o painel de modelos ao clicar fora dele ou do botão
+  // Fecha o painel ao clicar fora dele ou do botão de cadastro.
   document.addEventListener('click', (ev) => {
     try {
-      const isExpanded = launchPanelToggle.getAttribute('aria-expanded') === 'true';
+      const isExpanded = addLaunchBtn.getAttribute('aria-expanded') === 'true';
       if (!isExpanded) return;
-      const clickedInside = launchContent.contains(ev.target) || launchPanelToggle.contains(ev.target);
+      const clickedInside = launchContent.contains(ev.target) || addLaunchBtn.contains(ev.target);
       if (!clickedInside) {
-        launchPanelToggle.setAttribute('aria-expanded', 'false');
+        addLaunchBtn.setAttribute('aria-expanded', 'false');
         launchContent.classList.add('collapsed');
       }
     } catch (e) {
@@ -1118,10 +1499,6 @@
       return;
     }
 
-    if (event.target.closest(".suggestion-item")) {
-      saveLaunchFromForm();
-      document.getElementById("amount").focus();
-    }
   });
 
   function syncAutomaticStatuses() {
@@ -1132,7 +1509,7 @@
 
       const computedStatus = getAutoPaymentStatus(item.dueDate);
       if (item.paymentStatus !== computedStatus) {
-        update(ref(db, `transacoes/${id}`), {
+        update(ref(db, `${dbRoot}/transacoes/${id}`), {
           paymentStatus: computedStatus,
           statusSource: "auto"
         });
@@ -1154,9 +1531,15 @@
       const [year, month] = item.dueDate.split('-').map(Number);
       return year === currentYear && (month - 1) === currentMonth;
     });
+    const yearlyTransactions = Object.entries(globalData).filter(([_, item]) => {
+      if (!item?.dueDate) return false;
+      const [year] = item.dueDate.split('-').map(Number);
+      return year === currentYear;
+    });
 
     renderManagerialReport(monthlyTransactions);
-    renderManagerialChart(monthlyTransactions);
+    renderManagerialChart('monthly-expenses-chart', monthlyTransactions, 'monthly');
+    renderManagerialChart('yearly-expenses-chart', yearlyTransactions, 'yearly');
   }
 
   function createReportSection(listElement, items, title) {
@@ -1164,18 +1547,45 @@
     let total = 0;
 
     if (items.length === 0) {
-      listElement.innerHTML = `<li>Nenhum lançamento ${title.toLowerCase()}.</li>`;
+      const emptyItem = document.createElement('li');
+      emptyItem.textContent = `Nenhum lançamento ${title.toLowerCase()}.`;
+      listElement.appendChild(emptyItem);
       return total;
     }
 
     items.forEach(([_, item]) => {
       total += Number(item.amount) || 0;
       const li = document.createElement('li');
-      li.innerHTML = `<div class="item-left"><div class="item-details"><strong>${item.desc}</strong><small>${formatDateLabel(item.dueDate)}</small></div></div><div class="item-right"><span class="item-value ${item.type}">${item.type === 'expense' ? '-' : '+'} ${currencyFormatter.format(item.amount)}</span></div>`;
+
+      const left = document.createElement('div');
+      left.className = 'item-left';
+      const details = document.createElement('div');
+      details.className = 'item-details';
+      const description = document.createElement('strong');
+      description.textContent = item.desc || 'Sem descrição';
+      const date = document.createElement('small');
+      date.textContent = formatDateLabel(item.dueDate);
+      details.append(description, date);
+      left.appendChild(details);
+
+      const right = document.createElement('div');
+      right.className = 'item-right';
+      const value = document.createElement('span');
+      const type = getTransactionType(item);
+      value.className = `item-value ${type}`;
+      value.textContent = `${type === 'expense' ? '-' : '+'} ${currencyFormatter.format(Number(item.amount) || 0)}`;
+      right.appendChild(value);
+
+      li.append(left, right);
       listElement.appendChild(li);
     });
 
     return total;
+  }
+
+  function updateReportHeader(elementId, total) {
+    const header = document.getElementById(elementId);
+    if (header) header.textContent = currencyFormatter.format(total);
   }
 
   function renderManagerialReport(transactions) {
@@ -1184,26 +1594,32 @@
     const pendingIncomeList = document.getElementById('report-pending-income-list');
     const paidIncomeList = document.getElementById('report-paid-income-list');
 
-    const pendingExpenses = transactions.filter(([_, item]) => item.type === 'expense' && resolvePaymentStatus(item) === 'A pagar');
-    const paidExpenses = transactions.filter(([_, item]) => item.type === 'expense' && resolvePaymentStatus(item) === 'Pago');
-    const pendingIncomes = transactions.filter(([_, item]) => item.type === 'income' && resolvePaymentStatus(item) === 'A receber');
-    const paidIncomes = transactions.filter(([_, item]) => item.type === 'income' && resolvePaymentStatus(item) === 'Recebido');
+    const pendingExpenses = transactions.filter(([_, item]) => getTransactionType(item) === 'expense' && resolvePaymentStatus(item) === 'A pagar');
+    const paidExpenses = transactions.filter(([_, item]) => getTransactionType(item) === 'expense' && resolvePaymentStatus(item) === 'Pago');
+    const pendingIncomes = transactions.filter(([_, item]) => getTransactionType(item) === 'income' && resolvePaymentStatus(item) === 'A receber');
+    const paidIncomes = transactions.filter(([_, item]) => getTransactionType(item) === 'income' && resolvePaymentStatus(item) === 'Recebido');
 
     const pendingExpenseTotal = createReportSection(pendingExpenseList, pendingExpenses, 'pendente');
     const paidExpenseTotal = createReportSection(paidExpenseList, paidExpenses, 'pago');
     const pendingIncomeTotal = createReportSection(pendingIncomeList, pendingIncomes, 'pendente');
     const paidIncomeTotal = createReportSection(paidIncomeList, paidIncomes, 'recebido');
-
-    document.getElementById('report-pending-expense-header').textContent = `A Pagar (${currencyFormatter.format(pendingExpenseTotal)})`;
-    document.getElementById('report-paid-expense-header').textContent = `Pago (${currencyFormatter.format(paidExpenseTotal)})`;
-    document.getElementById('report-pending-income-header').textContent = `A Receber (${currencyFormatter.format(pendingIncomeTotal)})`;
-    document.getElementById('report-paid-income-header').textContent = `Recebido (${currencyFormatter.format(paidIncomeTotal)})`;
+    
+    updateReportHeader('report-pending-expense-header', pendingExpenseTotal);
+    updateReportHeader('report-paid-expense-header', paidExpenseTotal);
+    updateReportHeader('report-pending-income-header', pendingIncomeTotal);
+    updateReportHeader('report-paid-income-header', paidIncomeTotal);
   }
 
-  function renderManagerialChart(transactions) {
-    const ctx = document.getElementById('expenses-chart').getContext('2d');
+  function renderManagerialChart(canvasId, transactions, period) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas || typeof Chart === 'undefined') {
+      console.error('Não foi possível carregar o gráfico de despesas.');
+      return;
+    }
+
+    const ctx = canvas.getContext('2d');
     const expensesByCategory = transactions
-      .filter(([_, item]) => item.type === 'expense')
+      .filter(([_, item]) => getTransactionType(item) === 'expense')
       .reduce((acc, [_, item]) => {
         const category = item.category || 'Geral';
         acc[category] = (acc[category] || 0) + Number(item.amount);
@@ -1213,11 +1629,12 @@
     const labels = Object.keys(expensesByCategory);
     const data = Object.values(expensesByCategory);
 
-    if (expensesChart) {
-      expensesChart.destroy();
+    const previousChart = period === 'monthly' ? monthlyExpensesChart : yearlyExpensesChart;
+    if (previousChart) {
+      previousChart.destroy();
     }
 
-    expensesChart = new Chart(ctx, {
+    const chart = new Chart(ctx, {
       type: 'bar',
       data: {
         labels: labels,
@@ -1250,12 +1667,42 @@
         }
       }
     });
+
+    if (period === 'monthly') {
+      monthlyExpensesChart = chart;
+    } else {
+      yearlyExpensesChart = chart;
+    }
   }
 
   managerialBtn.addEventListener('click', () => {
     mainView.style.display = 'none';
     managerialView.style.display = 'flex';
     renderManagerialData();
+  });
+
+  notificationBtn.addEventListener('click', () => {
+    const isExpanded = notificationBtn.getAttribute('aria-expanded') === 'true';
+    notificationBtn.setAttribute('aria-expanded', String(!isExpanded));
+    notificationPopover.classList.toggle('show', !isExpanded);
+  });
+
+  document.addEventListener('click', (event) => {
+    if (!notificationPopover.classList.contains('show')) return;
+    if (notificationBtn.contains(event.target) || notificationPopover.contains(event.target)) return;
+    notificationBtn.setAttribute('aria-expanded', 'false');
+    notificationPopover.classList.remove('show');
+  });
+
+  document.querySelectorAll('.report-toggle').forEach((toggle) => {
+    toggle.addEventListener('click', () => {
+      const list = document.getElementById(`report-${toggle.dataset.report}-list`);
+      if (!list) return;
+
+      const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+      toggle.setAttribute('aria-expanded', String(!isExpanded));
+      list.classList.toggle('collapsed', isExpanded);
+    });
   });
 
   backToMainBtn.addEventListener('click', () => {
@@ -1266,7 +1713,7 @@
   function updatePaymentStatus(id, newStatus) {
     if (!globalData?.[id]) return;
 
-    update(ref(db, `transacoes/${id}`), {
+    update(ref(db, `${dbRoot}/transacoes/${id}`), {
       paymentStatus: newStatus,
       statusSource: "manual"
     });
@@ -1313,7 +1760,7 @@
         return;
       }
 
-      const icon = categoryIcons[item.category] || (item.type === 'income' ? '💵' : '💳');
+      const icon = getCategoryIcon(item.category) || (item.type === 'income' ? '💵' : '💳');
       const paymentStatus = resolvePaymentStatus(item);
       const statusClass = paymentStatus === 'Pago' ? 'paid' : 'pending';
 
@@ -1419,6 +1866,7 @@
     } else {
       totalBalanceEl.style.color = "var(--danger)";
     }
+    renderNotifications();
   }
 
   // Escutar Firebase em Tempo Real
@@ -1432,6 +1880,26 @@
     launchCatalog = snapshot.val() || {};
     renderSuggestions();
     renderLaunchCatalog();
+  });
+
+  // Exibe as categorias padrão imediatamente, mesmo antes da resposta do Firebase.
+  renderCategories();
+
+  onValue(categoryRef, (snapshot) => {
+    categoryCatalog = snapshot.val() || {};
+    renderCategories();
+
+    if (!snapshot.exists() && !isSeedingCategories) {
+      isSeedingCategories = true;
+      const initialCategories = Object.fromEntries(defaultCategories.map((category) => [category.id, {
+        name: category.name,
+        icon: category.icon,
+        timestamp: Date.now()
+      }]));
+      update(categoryRef, initialCategories)
+        .catch((err) => console.error('Erro ao criar categorias iniciais:', err))
+        .finally(() => { isSeedingCategories = false; });
+    }
   });
 
   // Evento de filtro
@@ -1456,7 +1924,7 @@
     const deleteButton = event.target.closest("button[data-delete-id]");
     if (deleteButton) {
       if (confirm('Confirmar exclusão deste lançamento?')) {
-        remove(ref(db, `transacoes/${deleteButton.dataset.deleteId}`));
+        remove(ref(db, `${dbRoot}/transacoes/${deleteButton.dataset.deleteId}`));
       }
     }
   });
