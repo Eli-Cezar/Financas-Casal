@@ -1,11 +1,11 @@
 const CACHE_NAME = 'financas-casal-cache-v1';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/manifest.json',
+  '.',
+  'index.html',
+  'manifest.json',
   // Adicione aqui todos os seus arquivos estáticos (CSS, JS, imagens, etc.)
-  '/icons/icon-192x192.svg',
-  '/icons/icon-512x512.svg',
+  'icon-192.png', // Novo ícone PNG
+  'icon-512.png', // Novo ícone PNG
   'https://cdn.jsdelivr.net/npm/chart.js',
   'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js',
   'https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js',

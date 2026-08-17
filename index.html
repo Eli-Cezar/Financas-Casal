@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Finanças do Casal</title>
-  <link rel="manifest" href="/manifest.json"> <!-- Adicione esta linha -->
+  <title>Finanças do Casal</title> 
+  <link rel="manifest" href="manifest.json"> <!-- Adicione esta linha -->
   <!-- Adicionando Chart.js via CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
@@ -2310,7 +2310,7 @@
   // Registro do Service Worker para PWA
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/service-worker.js')
+      navigator.serviceWorker.register('service-worker.js')
         .then((registration) => {
           console.log('ServiceWorker registered: ', registration);
         })
