@@ -97,12 +97,94 @@
       color: var(--accent);
       border-color: rgba(249, 115, 22, 0.4);
     }
+    .auth-screen {
+      min-height: calc(100vh - 40px);
+      display: grid;
+      place-items: center;
+    }
+    /* --- NOVA ANIMAÇÃO DE LOGIN / CADASTRO --- */
+    
+    @keyframes pulseGlow {
+      0% {
+        box-shadow: 0 0 15px rgba(249, 115, 22, 0.2), 0 0 30px rgba(249, 115, 22, 0.1);
+        border-color: rgba(249, 115, 22, 0.6);
+      }
+      50% {
+        box-shadow: 0 0 40px rgba(249, 115, 22, 0.7), 0 0 80px rgba(249, 115, 22, 0.35);
+        border-color: rgba(249, 115, 22, 1);
+      }
+      100% {
+        box-shadow: 0 0 15px rgba(249, 115, 22, 0.2), 0 0 30px rgba(249, 115, 22, 0.1);
+        border-color: rgba(249, 115, 22, 0.6);
+      }
+    }
+
+    .auth-card {
+      width: min(100%, 420px);
+      padding: 40px 32px;
+      border: 2px solid var(--accent);
+      border-radius: 24px;
+      background: var(--card-bg);
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      
+      /* Aplica a nova animação pulsante */
+      animation: pulseGlow 3s ease-in-out infinite;
+      transition: all 0.3s ease;
+    }
+
+    .auth-card::before,
+    .auth-card::after {
+      display: none;
+    }
+
+    .auth-card.signup-mode {
+      width: min(100%, 460px);
+      padding: 36px 32px;
+    }
+    .auth-card h1 { color: var(--accent); font-size: 1.35rem; }
+    .auth-card > p { color: var(--text-muted); font-size: 0.85rem; margin: 8px 0 18px; }
+    .auth-form { display: flex; flex-direction: column; gap: 10px; text-align: left; }
+    .auth-form.hidden { display: none; }
+    .auth-form label { font-size: 0.8rem; color: var(--text-muted); }
+    .auth-form input, .auth-form select { width: 100%; }
+    .auth-form button[type="submit"] { margin-top: 4px; }
+    .auth-switch { margin-top: 14px; border: 0; background: transparent; color: var(--accent); cursor: pointer; font-weight: 600; }
+    .auth-message { min-height: 20px; margin-top: 10px; color: var(--danger); font-size: 0.82rem; }
+    .logout-btn { font-size: 0.72rem; padding: 7px 10px !important; }
+    @media (max-width: 440px) {
+      .danger-btn {
+        background: rgba(239, 68, 68, 0.12);
+        color: #f87171;
+        border-color: rgba(239, 68, 68, 0.3);
+      }
+      .danger-btn:hover {
+        background: rgba(239, 68, 68, 0.25);
+        border-color: rgba(239, 68, 68, 0.5);
+      }
+
+      .auth-card {
+        width: min(100%, 390px);
+        padding: 34px 44px;
+      }
+      .auth-card > p { margin: 6px 0 12px; }
+      .auth-form { gap: 7px; }
+    }
     .header-actions {
       display: flex;
       flex-direction: column;
       align-items: flex-end;
       gap: 6px;
       position: relative;
+    }
+    .header-actions-top {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      justify-content: flex-end;
     }
     .notification-btn {
       position: relative;
@@ -264,6 +346,9 @@
       background: #27272a;
       color: var(--text);
       border: 1px solid var(--border);
+      background: rgba(249, 115, 22, 0.05);
+      color: var(--accent);
+      border: 1px solid rgba(249, 115, 22, 0.3);
       border-radius: 10px;
       padding: 0 12px;
       font-size: 0.9rem;
@@ -271,6 +356,8 @@
       cursor: pointer;
       white-space: nowrap;
       min-height: 46px;
+      min-height: 40px; /* Ajustado para alinhar com o filtro */
+      transition: all 0.2s ease;
     }
     .catalog-toggle-btn {
       color: var(--accent);
@@ -716,7 +803,40 @@
   </style>
 </head>
 <body>
-<div id="main-view" class="container">
+<div id="auth-view" class="auth-screen">
+  <section id="auth-card" class="auth-card" aria-labelledby="auth-title">
+    <h1 id="auth-title">Finanças</h1>
+    <p id="auth-subtitle">Entre para acessar suas finanças.</p>
+
+    <form id="login-form" class="auth-form">
+      <label for="login-email">E-mail</label>
+      <input id="login-email" type="email" autocomplete="email" required placeholder="seu@email.com" />
+      <label for="login-password">Senha</label>
+      <input id="login-password" type="password" autocomplete="current-password" required placeholder="Sua senha" />
+      <button type="submit">Entrar</button>
+    </form>
+
+    <form id="signup-form" class="auth-form hidden">
+      <label for="signup-name">Seu nome</label>
+      <input id="signup-name" type="text" autocomplete="name" required />
+      <label for="signup-type">Tipo de uso</label>
+      <select id="signup-type" required>
+        <option value="individual">Individual</option>
+        <option value="couple">Casal</option>
+      </select>
+      <label for="signup-email">E-mail</label>
+      <input id="signup-email" type="email" autocomplete="email" required />
+      <label for="signup-password">Senha (mínimo de 6 caracteres)</label>
+      <input id="signup-password" type="password" autocomplete="new-password" minlength="6" required />
+      <button type="submit">Criar conta</button>
+    </form>
+
+    <p id="auth-message" class="auth-message" role="status" aria-live="polite"></p>
+    <button type="button" id="auth-switch-btn" class="auth-switch">Criar uma conta</button>
+  </section>
+</div>
+
+<div id="main-view" class="container" style="display: none;">
     <div class="top-fixed">
       <header>
         <div style="display: flex; align-items: center; gap: 14px;">
@@ -730,13 +850,16 @@
             </svg>
           </div>
           <div class="header-info">
-            <h1>Finanças do Casal</h1>
+            <h1 id="app-title">Finanças do Casal</h1>
             <p>Gestão Compartilhada em Tempo Real</p>
           </div>
         </div>
         <div class="header-actions">
-          <button type="button" id="notification-btn" class="notification-btn" aria-expanded="false" aria-label="Ver lançamentos vencidos ou com vencimento hoje" title="Lançamentos vencidos ou para hoje">🔔<span id="notification-count" class="notification-count"></span></button>
-          <button id="managerial-btn">Gerencial</button>
+          <div class="header-actions-top">
+            <button type="button" id="notification-btn" class="notification-btn" aria-expanded="false" aria-label="Ver lançamentos vencidos ou com vencimento hoje" title="Lançamentos vencidos ou para hoje">🔔<span id="notification-count" class="notification-count"></span></button>
+            <button type="button" id="logout-btn" class="logout-btn">Sair</button>
+          </div>
+          <button type="button" id="delete-account-btn" class="logout-btn danger-btn">Excluir Conta</button>
           <div id="notification-popover" class="notification-popover" role="dialog" aria-label="Avisos de vencimento">
             <h2>Vencimentos pendentes</h2>
             <ul id="notification-list" class="notification-list"></ul>
@@ -750,6 +873,7 @@
           <option value="currentMonth">Resumo: Mês Atual</option>
           <option value="allTime">Resumo: Total Geral</option>
         </select>
+        <button id="managerial-btn" class="secondary-btn">Gerencial</button>
       </div>
 
       <div class="balance-card">
@@ -850,6 +974,17 @@
   </header>
 
   <div class="form-card">
+    <div class="form-group" style="border-bottom: 1px solid var(--border); padding-bottom: 12px;">
+      <select id="managerial-month-filter" class="filter-select orange-border">
+        <!-- Options will be populated by JS -->
+      </select>
+      <select id="managerial-year-filter" class="filter-select orange-border">
+        <!-- Options will be populated by JS -->
+      </select>
+    </div>
+  </div>
+
+  <div class="form-card">
     <div class="history-header"><h2>Relatório do Mês</h2></div>
     
     <!-- A Pagar -->
@@ -907,8 +1042,10 @@
 <!-- Firebase SDK via CDN Modulares -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getDatabase, ref, push, onValue, remove, update } 
+  import { getDatabase, ref, push, onValue, remove, update, set }
     from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, deleteUser }
+    from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
   // Configuração do projeto Firebase
   const firebaseConfig = {
@@ -923,18 +1060,32 @@
 
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
-  const dbRoot = ""; // Mantém os dados já existentes do ECN na raiz do Firebase
-  const dbRef = ref(db, `${dbRoot}/transacoes`);
+  const auth = getAuth(app);
+  const appRoot = "teste";
+  let dbRoot = null;
+  let dbRef = null;
 
   // Elementos das Telas
   const mainView = document.getElementById('main-view');
   const managerialView = document.getElementById('managerial-view');
   const managerialBtn = document.getElementById('managerial-btn');
   const backToMainBtn = document.getElementById('back-to-main-btn');
+  const authView = document.getElementById('auth-view');
+  const authCard = document.getElementById('auth-card');
+  const loginForm = document.getElementById('login-form');
+  const signupForm = document.getElementById('signup-form');
+  const authSwitchBtn = document.getElementById('auth-switch-btn');
+  const authMessage = document.getElementById('auth-message');
+  const logoutBtn = document.getElementById('logout-btn');
+  const deleteAccountBtn = document.getElementById('delete-account-btn');
+  const appTitle = document.getElementById('app-title');
   const notificationBtn = document.getElementById('notification-btn');
   const notificationCount = document.getElementById('notification-count');
   const notificationPopover = document.getElementById('notification-popover');
   const notificationList = document.getElementById('notification-list');
+  // Filtros da tela gerencial
+  const managerialMonthFilter = document.getElementById('managerial-month-filter');
+  const managerialYearFilter = document.getElementById('managerial-year-filter');
 
   const form = document.getElementById("finance-form");
   const list = document.getElementById("transactions-list");
@@ -982,8 +1133,102 @@
   let monthlyExpensesChart = null;
   let yearlyExpensesChart = null;
 
-  const launchRef = ref(db, `${dbRoot}/lancamentos`);
-  const categoryRef = ref(db, `${dbRoot}/categorias`);
+  let launchRef = null;
+  let categoryRef = null;
+  let transactionsUnsubscribe = null;
+  let launchesUnsubscribe = null;
+  let categoriesUnsubscribe = null;
+  let profileUnsubscribe = null;
+
+  function setAuthMessage(message = '') {
+    authMessage.textContent = message;
+  }
+
+  function formatAuthError(error) {
+    const messages = {
+      'auth/invalid-credential': 'E-mail ou senha inválidos.',
+      'auth/invalid-email': 'Informe um e-mail válido.',
+      'auth/email-already-in-use': 'Este e-mail já possui uma conta.',
+      'auth/weak-password': 'A senha deve ter pelo menos 6 caracteres.',
+      'auth/operation-not-allowed': 'O login por e-mail e senha ainda não está ativado no Firebase.'
+    };
+    return messages[error?.code] || 'Não foi possível concluir a operação. Tente novamente.';
+  }
+
+  function setAuthMode(isSignup) {
+    authCard.classList.toggle('signup-mode', isSignup);
+    loginForm.classList.toggle('hidden', isSignup);
+    signupForm.classList.toggle('hidden', !isSignup);
+    document.getElementById('auth-title').textContent = isSignup ? 'Criar conta' : 'Login';
+    document.getElementById('auth-subtitle').textContent = isSignup
+      ? 'Crie um espaço financeiro privado para você.'
+      : 'Entre para acessar suas finanças.';
+    authSwitchBtn.textContent = isSignup ? 'Já tenho uma conta' : 'Criar uma conta';
+    setAuthMessage();
+  }
+
+  function showAuthenticatedApp(profile, user) {
+    let title;
+    if (profile?.accountType === 'couple') {
+      title = `Finanças Casal - ${profile?.displayName || 'Casal'}`;
+    } else {
+      title = profile?.displayName || user.email?.split('@')[0] || 'Minhas Finanças';
+    }
+    appTitle.textContent = title;
+    authView.style.display = 'none';
+    managerialView.style.display = 'none';
+    mainView.style.display = 'flex';
+  }
+
+  function showAuthentication() {
+    mainView.style.display = 'none';
+    managerialView.style.display = 'none';
+    authView.style.display = 'grid';
+    setAuthMode(false);
+  }
+
+  function stopDataListeners() {
+    [transactionsUnsubscribe, launchesUnsubscribe, categoriesUnsubscribe, profileUnsubscribe].forEach((unsubscribe) => {
+      if (typeof unsubscribe === 'function') unsubscribe();
+    });
+    transactionsUnsubscribe = launchesUnsubscribe = categoriesUnsubscribe = profileUnsubscribe = null;
+  }
+
+  function startDataListeners(user) {
+    dbRoot = `${appRoot}/usuarios/${user.uid}`;
+    dbRef = ref(db, `${dbRoot}/transacoes`);
+    launchRef = ref(db, `${dbRoot}/lancamentos`);
+    categoryRef = ref(db, `${dbRoot}/categorias`);
+    const profileRef = ref(db, `${dbRoot}/perfil`);
+
+    profileUnsubscribe = onValue(profileRef, (snapshot) => showAuthenticatedApp(snapshot.val(), user));
+    transactionsUnsubscribe = onValue(dbRef, (snapshot) => {
+      globalData = snapshot.val();
+      syncAutomaticStatuses();
+      renderList();
+    });
+    launchesUnsubscribe = onValue(launchRef, (snapshot) => {
+      launchCatalog = snapshot.val() || {};
+      renderSuggestions();
+      renderLaunchCatalog();
+    });
+    categoriesUnsubscribe = onValue(categoryRef, (snapshot) => {
+      categoryCatalog = snapshot.val() || {};
+      renderCategories();
+
+      if (!snapshot.exists() && !isSeedingCategories) {
+        isSeedingCategories = true;
+        const initialCategories = Object.fromEntries(defaultCategories.map((category) => [category.id, {
+          name: category.name,
+          icon: category.icon,
+          timestamp: Date.now()
+        }]));
+        update(categoryRef, initialCategories)
+          .catch((err) => console.error('Erro ao criar categorias iniciais:', err))
+          .finally(() => { isSeedingCategories = false; });
+      }
+    });
+  }
 
   function getCategoryEntries() {
     const source = Object.keys(categoryCatalog).length ? categoryCatalog : Object.fromEntries(
@@ -1008,6 +1253,7 @@
       const option = document.createElement('option');
       option.value = name;
       option.textContent = `${category.icon || '🏷️'} ${name}`;
+      option.dataset.categoryId = id;
       categorySelect.appendChild(option);
 
       const li = document.createElement('li');
@@ -1023,15 +1269,15 @@
       const editBtn = document.createElement('button');
       editBtn.type = 'button';
       editBtn.className = 'edit-btn';
+      editBtn.dataset.categoryId = id;
       editBtn.textContent = '✎';
       editBtn.title = 'Editar categoria';
-      editBtn.addEventListener('click', () => editCategory(id));
       const deleteBtn = document.createElement('button');
       deleteBtn.type = 'button';
       deleteBtn.className = 'delete-btn';
+      deleteBtn.dataset.categoryId = id;
       deleteBtn.textContent = '✕';
       deleteBtn.title = 'Excluir categoria';
-      deleteBtn.addEventListener('click', () => deleteCategory(id));
       actions.append(editBtn, deleteBtn);
       li.append(details, actions);
       categoryList.appendChild(li);
@@ -1320,18 +1566,14 @@
       const editBtn = document.createElement('button');
       editBtn.type = 'button';
       editBtn.className = 'edit-btn';
+      editBtn.dataset.launchId = id;
       editBtn.textContent = '✎';
-      editBtn.addEventListener('click', () => populateLaunchForEdit(id));
 
       const deleteBtn = document.createElement('button');
       deleteBtn.type = 'button';
       deleteBtn.className = 'delete-btn';
+      deleteBtn.dataset.launchId = id;
       deleteBtn.textContent = '✕';
-      deleteBtn.addEventListener('click', () => {
-        if (confirm('Excluir este modelo de lançamento?')) {
-          remove(ref(db, `${dbRoot}/lancamentos/${id}`));
-        }
-      });
 
       actions.appendChild(editBtn);
       actions.appendChild(deleteBtn);
@@ -1479,16 +1721,12 @@
 
   // Fecha o painel ao clicar fora dele ou do botão de cadastro.
   document.addEventListener('click', (ev) => {
-    try {
-      const isExpanded = addLaunchBtn.getAttribute('aria-expanded') === 'true';
-      if (!isExpanded) return;
-      const clickedInside = launchContent.contains(ev.target) || addLaunchBtn.contains(ev.target);
-      if (!clickedInside) {
-        addLaunchBtn.setAttribute('aria-expanded', 'false');
-        launchContent.classList.add('collapsed');
-      }
-    } catch (e) {
-      // se elementos ainda não existirem, ignorar
+    const isExpanded = addLaunchBtn.getAttribute('aria-expanded') === 'true';
+    if (!isExpanded) return;
+    const clickedInside = launchContent.contains(ev.target) || addLaunchBtn.contains(ev.target);
+    if (!clickedInside) {
+      addLaunchBtn.setAttribute('aria-expanded', 'false');
+      launchContent.classList.add('collapsed');
     }
   });
 
@@ -1522,19 +1760,19 @@
   function renderManagerialData() {
     if (!globalData) return;
 
-    const now = new Date();
-    const currentMonth = now.getMonth();
-    const currentYear = now.getFullYear();
+    const selectedMonth = parseInt(managerialMonthFilter.value, 10);
+    const selectedYear = parseInt(managerialYearFilter.value, 10);
 
     const monthlyTransactions = Object.entries(globalData).filter(([_, item]) => {
       if (!item.dueDate) return false;
       const [year, month] = item.dueDate.split('-').map(Number);
-      return year === currentYear && (month - 1) === currentMonth;
+      return year === selectedYear && (month - 1) === selectedMonth;
     });
+
     const yearlyTransactions = Object.entries(globalData).filter(([_, item]) => {
       if (!item?.dueDate) return false;
       const [year] = item.dueDate.split('-').map(Number);
-      return year === currentYear;
+      return year === selectedYear;
     });
 
     renderManagerialReport(monthlyTransactions);
@@ -1675,9 +1913,41 @@
     }
   }
 
+  function populateManagerialFilters() {
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+
+    // Popula meses
+    managerialMonthFilter.innerHTML = '';
+    const months = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+    months.forEach((month, index) => {
+      const option = document.createElement('option');
+      option.value = index;
+      option.textContent = month;
+      if (index === currentMonth) {
+        option.selected = true;
+      }
+      managerialMonthFilter.appendChild(option);
+    });
+
+    // Popula anos (dos últimos 5 anos até o próximo)
+    managerialYearFilter.innerHTML = '';
+    for (let year = currentYear + 1; year >= currentYear - 5; year--) {
+      const option = document.createElement('option');
+      option.value = year;
+      option.textContent = year;
+      if (year === currentYear) {
+        option.selected = true;
+      }
+      managerialYearFilter.appendChild(option);
+    }
+  }
+
   managerialBtn.addEventListener('click', () => {
     mainView.style.display = 'none';
     managerialView.style.display = 'flex';
+    populateManagerialFilters();
     renderManagerialData();
   });
 
@@ -1704,6 +1974,9 @@
       list.classList.toggle('collapsed', isExpanded);
     });
   });
+
+  managerialMonthFilter.addEventListener('change', renderManagerialData);
+  managerialYearFilter.addEventListener('change', renderManagerialData);
 
   backToMainBtn.addEventListener('click', () => {
     managerialView.style.display = 'none';
@@ -1815,13 +2088,13 @@
       const editBtn = document.createElement('button');
       editBtn.className = 'edit-btn';
       editBtn.type = 'button';
+      editBtn.dataset.transactionId = id;
       editBtn.textContent = '✎';
-      editBtn.addEventListener('click', () => populateFormForEdit(id));
 
       const deleteBtn = document.createElement('button');
       deleteBtn.className = 'delete-btn';
       deleteBtn.type = 'button';
-      deleteBtn.textContent = '✕';
+      deleteBtn.textContent = '✕'; 
       deleteBtn.dataset.deleteId = id; // Adiciona um identificador para o botão de exclusão
       actions.appendChild(editBtn);
       actions.appendChild(deleteBtn);
@@ -1869,37 +2142,100 @@
     renderNotifications();
   }
 
-  // Escutar Firebase em Tempo Real
-  onValue(dbRef, (snapshot) => {
-    globalData = snapshot.val();
-    syncAutomaticStatuses();
-    renderList();
-  });
+  authSwitchBtn.addEventListener('click', () => setAuthMode(!loginForm.classList.contains('hidden')));
 
-  onValue(launchRef, (snapshot) => {
-    launchCatalog = snapshot.val() || {};
-    renderSuggestions();
-    renderLaunchCatalog();
-  });
-
-  // Exibe as categorias padrão imediatamente, mesmo antes da resposta do Firebase.
-  renderCategories();
-
-  onValue(categoryRef, (snapshot) => {
-    categoryCatalog = snapshot.val() || {};
-    renderCategories();
-
-    if (!snapshot.exists() && !isSeedingCategories) {
-      isSeedingCategories = true;
-      const initialCategories = Object.fromEntries(defaultCategories.map((category) => [category.id, {
-        name: category.name,
-        icon: category.icon,
-        timestamp: Date.now()
-      }]));
-      update(categoryRef, initialCategories)
-        .catch((err) => console.error('Erro ao criar categorias iniciais:', err))
-        .finally(() => { isSeedingCategories = false; });
+  document.getElementById('signup-type').addEventListener('change', (event) => {
+    const nameLabel = document.querySelector('label[for="signup-name"]');
+    const nameInput = document.getElementById('signup-name');
+    if (event.target.value === 'couple') {
+      nameLabel.textContent = 'Nome do Casal (ex: João & Maria)';
+      nameInput.placeholder = 'João & Maria';
+    } else {
+      nameLabel.textContent = 'Seu nome';
+      nameInput.placeholder = '';
     }
+  });
+
+
+  // Impede o envio do formulário de login ao pressionar Enter no campo de e-mail
+  document.getElementById('login-email').addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+      event.preventDefault(); // Impede a submissão do formulário
+      document.getElementById('login-password').focus(); // Move o foco para o campo de senha
+    }
+  });
+
+
+  loginForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    setAuthMessage();
+    const email = document.getElementById('login-email').value.trim();
+    const password = document.getElementById('login-password').value;
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (error) {
+      setAuthMessage(formatAuthError(error));
+    }
+  });
+
+  signupForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    setAuthMessage();
+    const displayName = document.getElementById('signup-name').value.trim();
+    const accountType = document.getElementById('signup-type').value;
+    const email = document.getElementById('signup-email').value.trim();
+    const password = document.getElementById('signup-password').value;
+    if (!displayName) {
+      setAuthMessage('Informe seu nome.');
+      return;
+    }
+    try {
+      const credential = await createUserWithEmailAndPassword(auth, email, password);
+      await set(ref(db, `${appRoot}/usuarios/${credential.user.uid}/perfil`), {
+        displayName,
+        accountType,
+        email,
+        createdAt: Date.now()
+      });
+    } catch (error) {
+      setAuthMessage(formatAuthError(error));
+    }
+  });
+
+  logoutBtn.addEventListener('click', () => signOut(auth));
+
+  deleteAccountBtn.addEventListener('click', async () => {
+    const confirmation = confirm(
+      'Você tem certeza que deseja excluir sua conta?\n\nATENÇÃO: Esta ação é irreversível e todos os seus dados financeiros serão permanentemente apagados.'
+    );
+
+    if (!confirmation) return;
+
+    const user = auth.currentUser;
+    if (!user) return;
+
+    try {
+      // Primeiro, remove os dados do Realtime Database
+      await remove(ref(db, `${appRoot}/usuarios/${user.uid}`));
+      // Em seguida, deleta o usuário da autenticação
+      await deleteUser(user);
+      alert('Sua conta e todos os seus dados foram excluídos com sucesso.');
+    } catch (error) {
+      console.error("Erro ao excluir conta:", error);
+      alert('Ocorreu um erro ao excluir sua conta. Por segurança, pode ser necessário que você faça logout e login novamente antes de tentar excluir.');
+    }
+  });
+
+  onAuthStateChanged(auth, (user) => {
+    stopDataListeners();
+    globalData = null;
+    launchCatalog = {};
+    categoryCatalog = {};
+    if (!user) {
+      showAuthentication();
+      return;
+    }
+    startDataListeners(user);
   });
 
   // Evento de filtro
@@ -1909,6 +2245,7 @@
   filterSummaryPeriod.addEventListener("change", renderList);
 
   list.addEventListener("click", (event) => {
+    // --- Delegação para o botão de status ---
     const statusButton = event.target.closest("button[data-id]");
     if (statusButton) {
       const currentStatus = statusButton.textContent;
@@ -1921,12 +2258,41 @@
       return;
     }
 
+    // --- Delegação para o botão de exclusão ---
     const deleteButton = event.target.closest("button[data-delete-id]");
     if (deleteButton) {
       if (confirm('Confirmar exclusão deste lançamento?')) {
         remove(ref(db, `${dbRoot}/transacoes/${deleteButton.dataset.deleteId}`));
       }
+      return;
     }
+
+    // --- Delegação para o botão de edição ---
+    const editButton = event.target.closest("button[data-transaction-id]");
+    if (editButton) {
+      populateFormForEdit(editButton.dataset.transactionId);
+      return;
+    }
+  });
+
+  categoryList.addEventListener('click', (event) => {
+    const editBtn = event.target.closest('.edit-btn[data-category-id]');
+    if (editBtn) {
+      editCategory(editBtn.dataset.categoryId);
+      return;
+    }
+    const deleteBtn = event.target.closest('.delete-btn[data-category-id]');
+    if (deleteBtn) {
+      deleteCategory(deleteBtn.dataset.categoryId);
+      return;
+    }
+  });
+
+  launchList.addEventListener('click', (event) => {
+    const editBtn = event.target.closest('.edit-btn[data-launch-id]');
+    if (editBtn) populateLaunchForEdit(editBtn.dataset.launchId);
+    const deleteBtn = event.target.closest('.delete-btn[data-launch-id]');
+    if (deleteBtn && confirm('Excluir este modelo de lançamento?')) remove(ref(db, `${dbRoot}/lancamentos/${deleteBtn.dataset.launchId}`));
   });
 
   setInterval(syncAutomaticStatuses, 60000);
