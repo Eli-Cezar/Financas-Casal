@@ -181,6 +181,28 @@
       gap: 6px;
       position: relative;
     }
+    .input-wrapper {
+      position: relative;
+      width: 100%;
+    }
+    .password-toggle-btn {
+      position: absolute;
+      top: 50%;
+      right: 12px;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1.2rem;
+      padding: 0;
+    }
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+      position: relative;
+    }
     .header-actions-top {
       display: flex;
       align-items: center;
@@ -845,7 +867,10 @@
       <label for="login-email">E-mail</label>
       <input id="login-email" type="email" autocomplete="email" required placeholder="seu@email.com" />
       <label for="login-password">Senha</label>
-      <input id="login-password" type="password" autocomplete="current-password" required placeholder="Sua senha" />
+      <div class="input-wrapper">
+        <input id="login-password" type="password" autocomplete="current-password" required placeholder="Sua senha" />
+        <button type="button" id="toggle-login-password" class="password-toggle-btn" aria-label="Mostrar/ocultar senha">👁️</button>
+      </div>
       <button type="submit">Entrar</button>
     </form>
 
@@ -860,7 +885,10 @@
       <label for="signup-email">E-mail</label>
       <input id="signup-email" type="email" autocomplete="email" required />
       <label for="signup-password">Senha (mínimo de 6 caracteres)</label>
-      <input id="signup-password" type="password" autocomplete="new-password" minlength="6" required />
+      <div class="input-wrapper">
+        <input id="signup-password" type="password" autocomplete="new-password" minlength="6" required />
+        <button type="button" id="toggle-signup-password" class="password-toggle-btn" aria-label="Mostrar/ocultar senha">👁️</button>
+      </div>
       <button type="submit">Criar conta</button>
     </form>
 
@@ -2254,6 +2282,22 @@
     }
   });
 
+  // Função para alternar visibilidade da senha
+  function setupPasswordToggle(toggleId, inputId) {
+    const toggleButton = document.getElementById(toggleId);
+    const passwordInput = document.getElementById(inputId);
+    if (!toggleButton || !passwordInput) return;
+
+    toggleButton.addEventListener('click', () => {
+      const isPassword = passwordInput.type === 'password';
+      passwordInput.type = isPassword ? 'text' : 'password';
+      toggleButton.textContent = isPassword ? '🙈' : '👁️';
+    });
+  }
+
+  // Ativa a funcionalidade para os dois campos de senha
+  setupPasswordToggle('toggle-login-password', 'login-password');
+  setupPasswordToggle('toggle-signup-password', 'signup-password');
 
   // Impede o envio do formulário de login ao pressionar Enter no campo de e-mail
   document.getElementById('login-email').addEventListener('keydown', (event) => {
