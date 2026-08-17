@@ -791,6 +791,10 @@
       .form-group > #category {
         flex-basis: 100%;
       }
+    .repeat-options-container {
+      display: none;
+      gap: 10px;
+    }
       .item {
         flex-direction: column;
         align-items: flex-start;
@@ -945,6 +949,18 @@
         <select id="category" aria-label="Categoria"></select>
       </div>
 
+      <div class="form-group" style="align-items: center; gap: 15px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <input type="checkbox" id="repeat-transaction" style="width: auto;">
+          <label for="repeat-transaction" style="font-size: 0.9rem;">Repetir lançamento</label>
+        </div>
+        <div id="repeat-options" class="form-group repeat-options-container">
+          <select id="repeat-frequency">
+            <option value="monthly">Mensalmente</option>
+            <option value="yearly">Anualmente</option>
+          </select>
+        </div>
+      </div>
       <button type="submit">Adicionar Transação</button>
 
     </form>
@@ -1616,6 +1632,8 @@
       const category = document.getElementById("category").value;
       const dueDate = document.getElementById("due-date").value;
 
+      const repeat = document.getElementById("repeat-transaction").checked;
+      const frequency = document.getElementById("repeat-frequency").value;
       // Validações básicas
       if (!desc) {
         showFormMessage('Preencha a descrição.', 'error');
@@ -1654,7 +1672,8 @@
         dueDate: dueDate || null,
         category: category || "Geral",
         launchId: selectedLaunchId || null,
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        repeat: repeat ? frequency : false
       };
 
       // Feedback de submissão
@@ -1680,6 +1699,14 @@
     })();
   });
 
+  document.getElementById('repeat-transaction').addEventListener('change', (e) => {
+    const repeatOptions = document.getElementById('repeat-options');
+    if (e.target.checked) {
+      repeatOptions.style.display = 'flex';
+    } else {
+      repeatOptions.style.display = 'none';
+    }
+  });
   function showFormMessage(text, type) {
     const el = document.getElementById('form-message');
     if (!el) return;
@@ -1989,13 +2016,39 @@
     mainView.style.display = 'block';
   });
 
-  function updatePaymentStatus(id, newStatus) {
-    if (!globalData?.[id]) return;
+  async function updatePaymentStatus(id, newStatus) {
+    const item = globalData?.[id];
+    if (!item) return;
 
-    update(ref(db, `${dbRoot}/transacoes/${id}`), {
+    await update(ref(db, `${dbRoot}/transacoes/${id}`), {
       paymentStatus: newStatus,
       statusSource: "manual"
     });
+
+    // Lógica de Recorrência: se o item foi pago/recebido e deve repetir
+    if ((newStatus === "Pago" || newStatus === "Recebido") && item.repeat) {
+      const [year, month, day] = item.dueDate.split('-').map(Number);
+      let nextDueDate;
+
+      if (item.repeat === 'monthly') {
+        nextDueDate = new Date(year, month, day); // month is 0-indexed, but month from split is 1-indexed
+      } else { // yearly
+        nextDueDate = new Date(year + 1, month - 1, day);
+      }
+
+      const newPayload = {
+        ...item,
+        dueDate: todayDatePart(nextDueDate),
+        paymentStatus: 'A pagar', // Reset status for the new transaction
+        statusSource: 'auto',
+        timestamp: Date.now()
+      };
+
+      // Remove o ID para que o Firebase crie um novo
+      delete newPayload.id;
+
+      await push(dbRef, newPayload);
+    }
   }
 
   // Renderizar a lista na tela
@@ -2008,6 +2061,7 @@
     let expenseSum = 0;
     let monthlyIncomeSum = 0;
     let monthlyExpenseSum = 0;
+    let filteredTotal = 0;
     const selectedFilter = filterPaymentStatus.value;
 
     const now = new Date();
@@ -2038,6 +2092,7 @@
       if (selectedFilter !== "all" && resolvePaymentStatus(item) !== selectedFilter) {
         return;
       }
+      filteredTotal += amount;
 
       const icon = getCategoryIcon(item.category) || (item.type === 'income' ? '💵' : '💳');
       const paymentStatus = resolvePaymentStatus(item);
@@ -2113,6 +2168,9 @@
 
       list.appendChild(li);
     });
+
+    // Atualiza o total filtrado
+    document.querySelector("#filtered-total-display strong").textContent = currencyFormatter.format(filteredTotal);
 
     // O saldo geral sempre será o total
     const totalBalance = incomeSum - expenseSum;
