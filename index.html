@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Finanças do Casal</title>
+  <link rel="manifest" href="/manifest.json"> <!-- Adicione esta linha -->
   <!-- Adicionando Chart.js via CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
@@ -880,26 +881,27 @@
         <button id="managerial-btn" class="secondary-btn">Gerencial</button>
       </div>
 
-      <div class="balance-card">
+    </div>
+
+    <!-- Painel de Resumo com Bordas Laranja -->
+    <div class="balance-card">
       <div class="balance-item">
         <span id="label-income">Receitas</span>
         <strong class="income" id="total-income">R$ 0,00</strong>
       </div>
-    <div class="balance-item">
-      <span id="label-expense">Despesas</span>
-      <strong class="expense" id="total-expense">R$ 0,00</strong>
+      <div class="balance-item">
+        <span id="label-expense">Despesas</span>
+        <strong class="expense" id="total-expense">R$ 0,00</strong>
+      </div>
+      <div class="balance-item">
+        <span>Saldo do Mês</span>
+        <strong id="monthly-balance">R$ 0,00</strong>
+      </div>
     </div>
-    <div class="balance-item">
-      <span>Saldo do Mês</span>
-      <strong id="monthly-balance">R$ 0,00</strong>
+    <div class="total-balance-display">
+      Saldo Geral
+      <strong id="total-balance">R$ 0,00</strong>
     </div>
-  </div>
-
-  <div class="total-balance-display">
-    Saldo Geral
-    <strong id="total-balance">R$ 0,00</strong>
-  </div>
-  </div>
 
     <!-- Formulário de Cadastro -->
     <div class="form-card">
@@ -2305,7 +2307,18 @@
     populateFormForEdit(id);
   };
 
-
+  // Registro do Service Worker para PWA
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/service-worker.js')
+        .then((registration) => {
+          console.log('ServiceWorker registered: ', registration);
+        })
+        .catch((registrationError) => {
+          console.log('ServiceWorker registration failed: ', registrationError);
+        });
+    });
+  }
 </script>
 
 </body>

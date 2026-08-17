@@ -1,0 +1,11 @@
+<svg width="192" height="192" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fundo do Ícone -->
+  <rect width="64" height="64" rx="12" fill="#121212"/>
+  <rect x="2" y="2" width="60" height="60" rx="10" fill="none" stroke="#f97316" stroke-width="3"/>
+
+  <!-- Símbolo de Finanças (simplificado) -->
+  <g fill="#f97316">
+    <path d="M18 18c0-4.418 3.582-8 8-8s8 3.582 8 8-3.582 8-8 8-8-3.582-8-8Z"/>
+    <path d="M14 54c0-5.523 4.477-10 10-10h4c5.523 0 10 4.477 10 10v2H14v-2Z" opacity="0.8"/>
+  </g>
+</svg>
