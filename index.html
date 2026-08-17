@@ -2056,6 +2056,8 @@
     // Garante que globalData seja um objeto
     globalData = globalData || {};
 
+    console.log("renderList called. globalData:", globalData); // Debugging line
+
     list.innerHTML = "";
     let incomeSum = 0;
     let expenseSum = 0;
@@ -2168,6 +2170,8 @@
 
       list.appendChild(li);
     });
+
+    console.log("Calculated sums - incomeSum:", incomeSum, "expenseSum:", expenseSum, "monthlyIncomeSum:", monthlyIncomeSum, "monthlyExpenseSum:", monthlyExpenseSum, "filteredTotal:", filteredTotal); // Debugging line
 
     // Atualiza o total filtrado
     document.querySelector("#filtered-total-display strong").textContent = currencyFormatter.format(filteredTotal);
