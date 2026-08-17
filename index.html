@@ -702,6 +702,30 @@
       font-size: 0.95rem;
       font-weight: 600;
     }
+    .history-header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .filtered-total {
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(249, 115, 22, 0.3);
+      background: rgba(249, 115, 22, 0.05);
+      text-align: right;
+    }
+    .filtered-total span {
+      display: block;
+      font-size: 0.8rem;
+      color: #fb923c; /* Tom de laranja para o rótulo */
+      font-weight: 600;
+    }
+    .filtered-total strong {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
 
     .report-toggle:hover {
       background: rgba(249, 115, 22, 0.12);
@@ -969,14 +993,20 @@
   <!-- Histórico com Filtro -->
   <div class="history-panel">
     <div class="history-header">
-      <h2>Histórico</h2>
-      <select id="filter-payment-status" class="filter-select orange-border">
-        <option value="all">Todos os Lançamentos</option>
-        <option value="Pago">Filtrar: Pago</option>
-        <option value="Recebido">Filtrar: Recebido</option>
-        <option value="A pagar">Filtrar: A pagar</option>
-        <option value="A receber">Filtrar: A receber</option>
-      </select>
+      <div class="history-header-left">
+        <h2>Histórico</h2>
+        <select id="filter-payment-status" class="filter-select orange-border">
+          <option value="all">Todos os Lançamentos</option>
+          <option value="Pago">Filtrar: Pago</option>
+          <option value="Recebido">Filtrar: Recebido</option>
+          <option value="A pagar">Filtrar: A pagar</option>
+          <option value="A receber">Filtrar: A receber</option>
+        </select>
+      </div>
+      <div id="filtered-total-display" class="filtered-total">
+        <span>Total Filtrado</span>
+        <strong>R$ 0,00</strong>
+      </div>
     </div>
 
     <ul id="transactions-list"></ul>
