@@ -197,12 +197,6 @@
       font-size: 1.2rem;
       padding: 0;
     }
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 6px;
-      position: relative;
-    }
     .header-actions-top {
       display: flex;
       align-items: center;
@@ -571,17 +565,6 @@
       color: #f87171;
       border-color: rgba(239, 68, 68, 0.3);
       background: rgba(239, 68, 68, 0.12);
-    }
-    .launch-content {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin: 0;
-      padding: 0;
-      max-height: 420px;
-      overflow-y: auto;
-      padding-right: 4px;
-      transition: max-height 0.2s ease, opacity 0.2s ease;
     }
     .report-list {
       list-style: none;
@@ -2089,7 +2072,8 @@
       let nextDueDate;
 
       if (item.repeat === 'monthly') {
-        nextDueDate = new Date(year, month, day); // month is 0-indexed, but month from split is 1-indexed
+        nextDueDate = new Date(year, month - 1, day);
+        nextDueDate.setMonth(nextDueDate.getMonth() + 1);
       } else { // yearly
         nextDueDate = new Date(year + 1, month - 1, day);
       }
@@ -2260,10 +2244,11 @@
     labelIncome.textContent = incomeLabel;
     labelExpense.textContent = expenseLabel;
     // Cor condicional do Saldo
-    if (totalBalance >= 0) {
+    const balanceForColor = filterSummaryPeriod.value === "currentMonth" ? (monthlyIncomeSum - monthlyExpenseSum) : totalBalance;
+    if (balanceForColor >= 0) {
       totalBalanceEl.style.color = "var(--primary)";
     } else {
-      totalBalanceEl.style.color = "var(--danger)";
+      totalBalanceEl.style.color = "var(--danger)"; // A cor do saldo geral deve refletir o saldo geral
     }
     renderNotifications();
   }
@@ -2393,8 +2378,10 @@
       const currentStatus = statusButton.textContent;
       const isIncome = ['Recebido', 'A receber'].includes(currentStatus);
       
-      // Alterna entre os status 'Pago' e 'A pagar'
-      const nextStatus = (currentStatus === "Pago" || currentStatus === "Recebido") ? "A pagar" : "Pago";
+      // Alterna entre os status 'Pago' e 'A pagar' ou 'Recebido' e 'A receber'
+      const nextStatus = (currentStatus === "Pago" || currentStatus === "Recebido") 
+        ? (isIncome ? "A receber" : "A pagar") 
+        : (isIncome ? "Recebido" : "Pago");
 
       updatePaymentStatus(statusButton.dataset.id, nextStatus);
       return;
