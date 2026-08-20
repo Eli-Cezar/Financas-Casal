@@ -972,9 +972,23 @@
           <label for="repeat-transaction" style="font-size: 0.9rem;">Repetir lançamento</label>
         </div>
         <div id="repeat-options" class="form-group repeat-options-container">
-          <select id="repeat-frequency">
+          <select id="repeatSelect" class="bg-gray-800 text-white rounded p-2 hidden">
             <option value="monthly">Mensalmente</option>
             <option value="yearly">Anualmente</option>
+          </select>
+          <select id="repeatCountSelect" class="bg-gray-800 text-white rounded p-2 hidden">
+            <option value="1">1x</option>
+            <option value="2">2x</option>
+            <option value="3">3x</option>
+            <option value="4">4x</option>
+            <option value="5">5x</option>
+            <option value="6">6x</option>
+            <option value="7">7x</option>
+            <option value="8">8x</option>
+            <option value="9">9x</option>
+            <option value="10">10x</option>
+            <option value="11">11x</option>
+            <option value="12">12x</option>
           </select>
         </div>
       </div>
@@ -1662,88 +1676,126 @@
     descInput.focus();
   }
 
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    (async () => {
-      const desc = descInput.value.trim();
-      const amountRaw = document.getElementById("amount").value;
-      const amount = parseFloat(amountRaw);
-      const type = document.getElementById("type").value;
-      const paymentStatusMode = document.getElementById("payment-status").value;
-      const category = document.getElementById("category").value;
-      const dueDate = document.getElementById("due-date").value;
-      const repeat = document.getElementById("repeat-transaction").checked;
-      const frequency = document.getElementById("repeat-frequency").value;
+ form.addEventListener("submit", (e) => {
+  e.preventDefault();
+  (async () => {
+    const desc = descInput.value.trim();
+    const amountRaw = document.getElementById("amount").value;
+    const amount = parseFloat(amountRaw);
+    const type = document.getElementById("type").value;
+    const paymentStatusMode = document.getElementById("payment-status").value;
+    const category = document.getElementById("category").value;
+    const dueDate = document.getElementById("due-date").value;
+    const repeat = document.getElementById("repeat-transaction").checked;
+    const frequency = document.getElementById("repeatSelect").value;
+    const repeatCount = parseInt(document.getElementById("repeatCountSelect").value, 10) || 1; // ✅ CORRIGIDO
 
-      if (!desc) {
-        showFormMessage('Preencha a descrição.', 'error');
-        descInput.focus();
-        return;
-      }
+    if (!desc) {
+      showFormMessage('Preencha a descrição.', 'error');
+      descInput.focus();
+      return;
+    }
 
-      if (Number.isNaN(amount) || amount <= 0) {
-        showFormMessage('Informe um valor válido maior que zero.', 'error');
-        document.getElementById('amount').focus();
-        return;
-      }
+    if (Number.isNaN(amount) || amount <= 0) {
+      showFormMessage('Informe um valor válido maior que zero.', 'error');
+      document.getElementById('amount').focus();
+      return;
+    }
 
-      if (!dueDate) {
-        showFormMessage('Informe a data de vencimento.', 'error');
-        document.getElementById('due-date').focus();
-        return;
-      }
+    if (!dueDate) {
+      showFormMessage('Informe a data de vencimento.', 'error');
+      document.getElementById('due-date').focus();
+      return;
+    }
 
-      let paymentStatus;
-      let statusSource = "auto";
+    let paymentStatus;
+    let statusSource = "auto";
 
-      // ✅ CORRIGIDO: status manual respeita Receita/Despesa
-      if (paymentStatusMode === "auto") {
-        paymentStatus = getAutoPaymentStatus(dueDate, type);
+    if (paymentStatusMode === "auto") {
+      paymentStatus = getAutoPaymentStatus(dueDate, type);
+    } else {
+      paymentStatus = paymentStatusMode;
+      statusSource = "manual";
+    }
+
+    const payload = {
+      desc,
+      amount,
+      type,
+      paymentStatus,
+      statusSource,
+      dueDate: dueDate || null,
+      category: category || "Geral",
+      launchId: selectedLaunchId || null,
+      timestamp: Date.now(),
+      repeat: repeat ? frequency : false,
+      repeatCount: repeat ? repeatCount : 1 // ✅ Salva a quantidade configurada
+    };
+
+    submitButton.disabled = true;
+    submitButton.textContent = editingTransactionId ? 'Salvando...' : 'Enviando...';
+    showFormMessage('', '');
+
+    try {
+      if (editingTransactionId) {
+        await update(ref(db, `${dbRoot}/transacoes/${editingTransactionId}`), payload);
       } else {
-        paymentStatus = paymentStatusMode;
-        statusSource = "manual";
-      }
+        // ✅ Se marcar para repetir, gera automaticamente as N parcelas/recorrências no banco
+        if (repeat && repeatCount > 1) {
+          const [initialYear, initialMonth, initialDay] = dueDate.split('-').map(Number);
 
-      const payload = {
-        desc,
-        amount,
-        type,
-        paymentStatus,
-        statusSource,
-        dueDate: dueDate || null,
-        category: category || "Geral",
-        launchId: selectedLaunchId || null,
-        timestamp: Date.now(),
-        repeat: repeat ? frequency : false
-      };
+          for (let i = 0; i < repeatCount; i++) {
+            let nextDate = new Date(initialYear, initialMonth - 1, initialDay);
 
-      submitButton.disabled = true;
-      submitButton.textContent = editingTransactionId ? 'Salvando...' : 'Enviando...';
-      showFormMessage('', '');
+            if (frequency === 'monthly') {
+              nextDate.setMonth(nextDate.getMonth() + i);
+            } else if (frequency === 'yearly') {
+              nextDate.setFullYear(nextDate.getFullYear() + i);
+            }
 
-      try {
-        if (editingTransactionId) {
-          await update(ref(db, `${dbRoot}/transacoes/${editingTransactionId}`), payload);
+            const formattedDueDate = todayDatePart(nextDate);
+            const itemPayload = {
+              ...payload,
+              desc: `${desc} (${i + 1}/${repeatCount})`,
+              dueDate: formattedDueDate,
+              paymentStatus: getAutoPaymentStatus(formattedDueDate, type),
+              statusSource: "auto"
+            };
+
+            await push(dbRef, itemPayload);
+          }
         } else {
           await push(dbRef, payload);
         }
-        showFormMessage('Transação salva com sucesso.', 'success');
-        resetForm();
-      } catch (err) {
-        console.error('Erro ao salvar transação:', err);
-        showFormMessage('Erro ao salvar. Verifique a conexão e permissões do Firebase.', 'error');
-      } finally {
-        submitButton.disabled = false;
-        submitButton.textContent = 'Adicionar Transação';
       }
-    })();
-  });
 
-  document.getElementById('repeat-transaction').addEventListener('change', (e) => {
-    const repeatOptions = document.getElementById('repeat-options');
-    repeatOptions.style.display = e.target.checked ? 'flex' : 'none';
-  });
-
+      showFormMessage('Transação salva com sucesso.', 'success');
+      resetForm();
+    } catch (err) {
+      console.error('Erro ao salvar transação:', err);
+      showFormMessage('Erro ao salvar. Verifique a conexão e permissões do Firebase.', 'error');
+    } finally {
+      submitButton.disabled = false;
+      submitButton.textContent = 'Adicionar Transação';
+    }
+  })();
+});
+// 🟢 INÍCIO DO BLOCO
+document.getElementById('repeat-transaction').addEventListener('change', (e) => {
+  const repeatOptions = document.getElementById('repeat-options');
+  const repeatSelect = document.getElementById('repeatSelect');
+  const repeatCountSelect = document.getElementById('repeatCountSelect');
+  
+  if (e.target.checked) {
+    repeatOptions.style.display = 'flex';
+    repeatSelect.classList.remove('hidden');
+    repeatCountSelect.classList.remove('hidden');
+  } else {
+    repeatOptions.style.display = 'none';
+    repeatSelect.classList.add('hidden');
+    repeatCountSelect.classList.add('hidden');
+  }
+});
   function showFormMessage(text, type) {
     const el = document.getElementById('form-message');
     if (!el) return;
@@ -2023,7 +2075,7 @@
     mainView.style.display = 'flex';
   });
 
-  async function updatePaymentStatus(id, newStatus) {
+ async function updatePaymentStatus(id, newStatus) {
     const item = globalData?.[id];
     if (!item) return;
 
@@ -2043,15 +2095,16 @@
         nextDueDate = new Date(year + 1, month - 1, day);
       }
 
+      // Renomeia o 'id' desestruturado para 'itemId' para não conflitar com o parâmetro 'id'
+      const { id: itemId, ...cleanItem } = item;
       const newPayload = {
-        ...item,
+        ...cleanItem,
         dueDate: todayDatePart(nextDueDate),
         paymentStatus: item.type === 'income' ? 'A receber' : 'A pagar',
         statusSource: 'auto',
         timestamp: Date.now()
       };
 
-      delete newPayload.id;
       await push(dbRef, newPayload);
     }
   }
